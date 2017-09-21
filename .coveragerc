@@ -1,0 +1,3 @@
+[run]
+source = waxe_image
+omit = waxe_image/test*
