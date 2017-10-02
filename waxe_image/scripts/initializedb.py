@@ -15,7 +15,7 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import MyModel
+from ..models import MyModel, File, Tag
 
 
 def usage(argv):
@@ -43,3 +43,16 @@ def main(argv=sys.argv):
 
         model = MyModel(name='one', value=1)
         dbsession.add(model)
+
+        for i in range(10):
+            t = Tag(
+                name='tag%i' % i
+            )
+            dbsession.add(t)
+            f = File(
+                root_path='/root%i' % i,
+                path='/root1/file%i' % i,
+                webpath='img/x.png',
+            )
+            f.tags = [t]
+            dbsession.add(f)
