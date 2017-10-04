@@ -13,7 +13,9 @@ import { TagService } from '../tag.service';
   selector: 'file',
   template: `
     <div class="card">
-      <img class="card-img-top" [src]="file.webpath">
+      <div class="card-img-top">
+        <img [src]="file.webpath">
+      </div>
       <div class="card-body">
         <p class="card-text">{{file.path}}</p>
         <tokenfield [(ngModel)]="tagsModel" (ngModelChange)="onChange($event)" [items]="tagService.getTags() | async"></tokenfield>
