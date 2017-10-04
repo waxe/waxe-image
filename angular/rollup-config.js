@@ -19,7 +19,10 @@ export default {
   plugins: [
       nodeResolve({jsnext: true, module: true}),
       commonjs({
-        include: 'node_modules/rxjs/**',
+        include: [
+          'node_modules/rxjs/**',
+          'node_modules/ng-lazyload-image/**'
+        ]
       }),
       uglify()
   ]
