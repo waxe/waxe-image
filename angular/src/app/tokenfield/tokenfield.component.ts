@@ -10,7 +10,7 @@ import { Observable } from 'rxjs/Rx';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/map';
 
-import { TagService } from './tag.service';
+import { TagService } from '../tag.service';
 
 
 enum Key {
@@ -128,6 +128,7 @@ export class TokenfieldComponent implements ControlValueAccessor {
       // Del: remove the last item
       event.preventDefault();
       this.typeahead.dismissPopup();
+      // TODO: do nothing if this.tokens is already empty
       this.tokens.pop();
       this.onChange(this.tokens);
       this.resetSize();

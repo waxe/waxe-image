@@ -15,4 +15,10 @@ export const API_URLS: any = {
   'tags': {
     'list': `${baseHref}api/tags`,
   },
+  'categories': {
+    'list': `${baseHref}api/categories`,
+    'category': {
+      'tags': `${baseHref}api/categories/{category.id}/tags`,
+    },
+  },
 }

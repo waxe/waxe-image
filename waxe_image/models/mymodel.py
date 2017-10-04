@@ -22,24 +22,24 @@ class MyModel(Base):
 Index('my_index', MyModel.name, unique=True, mysql_length=255)
 
 
-class Category(Base):
-    __tablename__ = 'category'
-    category_id = Column(Integer, primary_key=True)
-    name = Column(String)
-
-
 class Tag(Base):
     __tablename__ = 'tag'
     tag_id = Column(Integer, primary_key=True)
     name = Column(String)
-    category_id = Column(Integer, ForeignKey('category.category_id'))
-    category = relationship("Category", backref=backref("tags"))
 
 
 file_tag_table = Table(
     'file_tag',
     Base.metadata,
     Column('file_id', Integer, ForeignKey('file.file_id')),
+    Column('tag_id', Integer, ForeignKey('tag.tag_id'))
+)
+
+
+category_tag_table = Table(
+    'category_tag',
+    Base.metadata,
+    Column('category_id', Integer, ForeignKey('category.category_id')),
     Column('tag_id', Integer, ForeignKey('tag.tag_id'))
 )
 
@@ -51,3 +51,10 @@ class File(Base):
     path = Column(String)
     webpath = Column(String)
     tags = relationship("Tag", secondary=file_tag_table)
+
+
+class Category(Base):
+    __tablename__ = 'category'
+    category_id = Column(Integer, primary_key=True)
+    name = Column(String)
+    tags = relationship("Tag", secondary=category_tag_table)

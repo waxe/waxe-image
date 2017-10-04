@@ -5,7 +5,6 @@ import { FileService } from './file.service';
 
 
 @Component({
-  selector: 'files',
   template: `
   <div class="row">
     <div class="col-sm-3" *ngFor="let file of files">
