@@ -1,5 +1,5 @@
 // https://plnkr.co/edit/sZNw1lO2y3ZZR0GxLyjD?p=preview
-import {Component, NgModule, ViewChild, Input, Output, HostBinding, EventEmitter, Renderer, forwardRef, AfterContentChecked, AfterViewChecked, ElementRef } from '@angular/core';
+import {Component, NgModule, ViewChild, Input, Output, HostBinding, EventEmitter, Renderer, forwardRef, ElementRef } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -71,6 +71,7 @@ function sizeToInt(size: string) {
       padding: 0;
       height: 28px;
       line-height: 28px;
+      width: 70px;
     }
 
     .remove-token {
@@ -82,7 +83,7 @@ function sizeToInt(size: string) {
     }
   `]
 })
-export class TokenfieldComponent implements ControlValueAccessor, AfterViewChecked {
+export class TokenfieldComponent implements ControlValueAccessor {
 
   @ViewChild('input') input: any;
   @ViewChild(NgbTypeahead) typeahead: NgbTypeahead;
@@ -108,10 +109,6 @@ export class TokenfieldComponent implements ControlValueAccessor, AfterViewCheck
   registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 
-  ngAfterViewChecked() {
-    this.adjustInputWidth();
-  }
-
   onClick(event: any) {
     // When clicking on the tokenfield gives focus to the input
     if (!event.defaultPrevented) {
@@ -133,12 +130,26 @@ export class TokenfieldComponent implements ControlValueAccessor, AfterViewCheck
       this.typeahead.dismissPopup();
       this.tokens.pop();
       this.onChange(this.tokens);
+      this.resetSize();
+      return true;
+    }
+
+    if (this.input.nativeElement.value.length === 1) {
+      // We are typing the second letter
+      // We don't get the first one since it can be an action with typeahead
+      this.adjustInputWidth();
     }
 
     if(this.typeahead && this.typeahead.isPopupOpen()) {
       // Nothing to do: typeahead is opened
       return true;
     }
+  }
+
+  resetSize() {
+    // TODO: find how to subscribe onChange is this component and attach this
+    // function
+    this.input.nativeElement.style.width = '70px';  // minimum width
   }
 
   adjustInputWidth(){
@@ -190,6 +201,7 @@ export class TokenfieldComponent implements ControlValueAccessor, AfterViewCheck
       this.onChange(this.tokens);
       this.input.nativeElement.value = '';
       this.input.nativeElement.focus();
+      this.resetSize();
     }
     else {
       // TODO: we need to trigger an Event to call the API to create this new
@@ -200,6 +212,7 @@ export class TokenfieldComponent implements ControlValueAccessor, AfterViewCheck
           this.onChange(this.tokens);
           this.input.nativeElement.value = '';
           this.input.nativeElement.focus();
+          this.resetSize();
         });
     }
   }
