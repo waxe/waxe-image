@@ -14,7 +14,7 @@ import { TagService } from '../tag.service';
   template: `
     <div class="card">
       <div class="card-img-top">
-        <img [src]="file.webpath">
+        <img [lazyLoad]="file.webpath">
       </div>
       <div class="card-body">
         <p class="card-text">{{file.path}}</p>

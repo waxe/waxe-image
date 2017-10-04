@@ -2,6 +2,7 @@ import { NgModule }      from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule }    from '@angular/forms';
 
+import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { FileComponent } from './file.component';
@@ -16,6 +17,7 @@ import { TokenfieldComponent } from '../tokenfield.component';
   imports: [
     CommonModule,
     FormsModule,
+    LazyLoadImageModule,
     NgbModule,
   ],
   declarations: [

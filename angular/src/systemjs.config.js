@@ -25,6 +25,7 @@
       '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
 
       '@ng-bootstrap/ng-bootstrap': 'node_modules/@ng-bootstrap/ng-bootstrap/bundles/ng-bootstrap.js',
+      'ng-lazyload-image': 'npm:ng-lazyload-image/',
 
       // other libraries
       'rxjs':                      'npm:rxjs',
@@ -47,7 +48,10 @@
       },
       tslib: {
         main: 'tslib.js'
-      }
+      },
+      'ng-lazyload-image': {
+        main: 'index.js'
+      },
     }
   });
 })(this);
