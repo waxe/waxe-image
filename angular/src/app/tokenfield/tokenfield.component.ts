@@ -10,7 +10,7 @@ import { Observable } from 'rxjs/Rx';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/map';
 
-import { TagService } from '../tag.service';
+import { TagService } from '../tag/tag.service';
 
 
 enum Key {
@@ -50,10 +50,10 @@ function sizeToInt(size: string) {
     <span class="remove-token" (click)="remove(token)">&nbsp;x</span>
   </span>
   <ng-template [ngIf]="items">
-    <input #input type="text" [(ngModel)]="inputModel" (keydown)="keyDown($event)" [ngbTypeahead]="searchItems" [resultFormatter]="resultFormatter" (selectItem)="selectItem($event)" placeholder="Add tag" />
+    <input #input type="text" [(ngModel)]="inputModel" (keydown)="keyDown($event)" [ngbTypeahead]="searchItems" [resultFormatter]="resultFormatter" (selectItem)="selectItem($event)" [placeholder]="placeholder" />
   </ng-template>
   <ng-template [ngIf]="!items">
-    <input #input type="text" [(ngModel)]="inputModel" (keydown)="keyDown($event)" placeholder="Add tag" />
+    <input #input type="text" [(ngModel)]="inputModel" (keydown)="keyDown($event)" [placeholder]="placeholder" />
   </ng-template>
   `,
   styles: [`
@@ -90,6 +90,9 @@ export class TokenfieldComponent implements ControlValueAccessor {
 
   @Output() changed = new EventEmitter();
   @Input() items: {}[];
+
+  @Input() placeholder: string;
+  @Input() create: Function;
 
   // The ngModel values of this field
   tokens: {}[] = [];
@@ -205,10 +208,8 @@ export class TokenfieldComponent implements ControlValueAccessor {
       this.resetSize();
     }
     else {
-      // TODO: we need to trigger an Event to call the API to create this new
-      // tag
-      this.tagService.create($e.item.value)
-        .then(tag => {
+      this.create($e.item.value)
+        .then((tag: any) => {
           this.tokens.push(tag)
           this.onChange(this.tokens);
           this.input.nativeElement.value = '';

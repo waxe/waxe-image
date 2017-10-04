@@ -5,8 +5,9 @@ import 'rxjs/add/operator/toPromise';
 import { Observable, ReplaySubject } from 'rxjs/Rx';
 
 import { ITag, ITagsResponse } from './tag';
+import { ICategory, ICategoriesResponse } from '../category/category';
 
-import { API_URLS } from './urls.service';
+import { API_URLS } from '../urls.service';
 
 
 @Injectable()
@@ -16,8 +17,8 @@ export class TagService {
 
   constructor(private http: HttpClient) { }
 
-  getTags(): Observable<ITag[]> {
-    if (!this.tags) {
+  getTags(refresh: boolean=false): Observable<ITag[]> {
+    if (!this.tags || refresh) {
       this.tags = new ReplaySubject(1);
       this.fetch();
     }
@@ -36,6 +37,13 @@ export class TagService {
                       this.fetch();
                       return response as ITag;
                     });
+  }
+
+  setCategories(tag: ITag, categories: ICategory[]): Promise<ICategory[]> {
+    const url = API_URLS.tags.tag.categories.supplant({'tag.id': tag.id});
+    return this.http.post<ICategoriesResponse>(url, {categories})
+               .toPromise()
+               .then(res => res.categories as ICategory[]);
   }
 
 }

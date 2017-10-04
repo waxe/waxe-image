@@ -3,9 +3,9 @@ import { Component, Input } from '@angular/core';
 import { Observable, Subject } from 'rxjs/Rx';
 
 import { ICategory } from './category';
-import { ITag } from '../tag';
+import { ITag } from '../tag/tag';
 import { CategoryService } from './category.service';
-import { TagService } from '../tag.service';
+import { TagService } from '../tag/tag.service';
 
 
 
@@ -13,7 +13,7 @@ import { TagService } from '../tag.service';
   selector: 'category',
   template: `
     <h3>{{category.name}}</h3>
-    <tokenfield [(ngModel)]="tagsModel" (ngModelChange)="onChange($event)" [items]="tagService.getTags() | async"></tokenfield>
+    <tokenfield [(ngModel)]="tagsModel" (ngModelChange)="onChange($event)" placeholder="Add tag" [create]="create" [items]="tagService.getTags() | async"></tokenfield>
   `,
 })
 export class CategoryComponent {
@@ -35,6 +35,11 @@ export class CategoryComponent {
 
   onChange(e: Event) {
     this.categoryService.setTags(this.category, this.tagsModel).then((tags: ITag[]) => this.category.tags = tags);
+  }
+
+  public create = this._create.bind(this);
+  private _create(name: string) {
+    return this.tagService.create(name);
   }
 
 }

@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 
 import { TokenfieldModule } from '../tokenfield/tokenfield.module';
 
-import { CategoryComponent } from './category.component';
-import { CategoryListComponent } from './category-list.component';
+import { TagComponent } from './tag.component';
+import { TagListComponent } from './tag-list.component';
+import { TagService } from './tag.service';
+
 
 
 @NgModule({
@@ -13,8 +15,11 @@ import { CategoryListComponent } from './category-list.component';
     TokenfieldModule,
   ],
   declarations: [
-    CategoryComponent,
-    CategoryListComponent,
+    TagComponent,
+    TagListComponent,
+  ],
+  providers: [
+    TagService,
   ],
 })
-export class CategoryModule { }
+export class TagModule { }

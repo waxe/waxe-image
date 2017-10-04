@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import 'rxjs/add/operator/toPromise';
 
 import { IFile } from './file';
-import { ITag, ITagsResponse } from '../tag';
+import { ITag, ITagsResponse } from '../tag/tag';
 
 import { API_URLS } from '../urls.service';
 

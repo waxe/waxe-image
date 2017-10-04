@@ -3,9 +3,9 @@ import { Component, Input } from '@angular/core';
 import { Observable, Subject } from 'rxjs/Rx';
 
 import { IFile } from './file';
-import { ITag } from '../tag';
+import { ITag } from '../tag/tag';
 import { FileService } from './file.service';
-import { TagService } from '../tag.service';
+import { TagService } from '../tag/tag.service';
 
 
 
@@ -18,7 +18,7 @@ import { TagService } from '../tag.service';
       </div>
       <div class="card-body">
         <p class="card-text">{{file.path}}</p>
-        <tokenfield [(ngModel)]="tagsModel" (ngModelChange)="onChange($event)" [items]="tagService.getTags() | async"></tokenfield>
+        <tokenfield [(ngModel)]="tagsModel" (ngModelChange)="onChange($event)" placeholder="Add tag" [create]="create" [items]="tagService.getTags() | async"></tokenfield>
       </div>
   </div>`,
 })
@@ -43,6 +43,11 @@ export class FileComponent {
 
   onChange(e: Event) {
     this.fileService.setTags(this.file, this.tagsModel).then((tags: ITag[]) => this.file.tags = tags);
+  }
+
+  public create = this._create.bind(this);
+  private _create(name: string) {
+    return this.tagService.create(name);
   }
 
 }

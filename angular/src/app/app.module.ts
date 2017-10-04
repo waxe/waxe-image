@@ -10,8 +10,11 @@ import { CategoryModule } from './category/category.module';
 import { CategoryListComponent } from './category/category-list.component';
 import { FileListComponent } from './file/file-list.component';
 import { FileModule } from './file/file.module';
+import { TagListComponent } from './tag/tag-list.component';
+import { TagModule } from './tag/tag.module';
 
-import { TagService } from './tag.service';
+import { CategoryService } from './category/category.service';
+import { TagService } from './tag/tag.service';
 
 
 @NgModule({
@@ -20,6 +23,7 @@ import { TagService } from './tag.service';
     HttpClientModule,
     CategoryModule,
     FileModule,
+    TagModule,
     RouterModule.forRoot([
       {
         path: '',
@@ -28,10 +32,15 @@ import { TagService } from './tag.service';
       {
         path: 'categories',
         component: CategoryListComponent,
+      },
+      {
+        path: 'tags',
+        component: TagListComponent,
       }
     ]),
   ],
   providers: [
+    CategoryService,
     TagService,
   ],
   declarations: [ AppComponent],

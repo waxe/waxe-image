@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 import { IFile } from './file';
+import { ITag } from '../tag/tag';
 import { FileService } from './file.service';
+import { TagService } from '../tag/tag.service';
 
 
 @Component({
@@ -15,9 +17,11 @@ import { FileService } from './file.service';
 export class FileListComponent implements OnInit {
   files: IFile[] = [];
 
-  constructor(private fileService: FileService) {}
+  constructor(private fileService: FileService, private tagService: TagService) {}
 
   ngOnInit() {
+    this.tagService.getTags(true).subscribe((tags: ITag[]) => {});
+
     this.fileService.getFiles().then((files: IFile[]) => {
       this.files= files;
     });

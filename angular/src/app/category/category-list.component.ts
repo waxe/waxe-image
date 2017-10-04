@@ -31,12 +31,12 @@ export class CategoryListComponent implements OnInit {
   }
 
   fetch() {
-    this.categoryService.getCategories().then((categories: ICategory[]) => {
+    this.categoryService.getCategories(true).subscribe((categories: ICategory[]) => {
       this.categories = categories;
     });
   }
 
-  addCategory(input) {
+  addCategory(input: HTMLInputElement) {
     if (!input.value) return false;
     this.categoryService.create(input.value).then(() => {
       input.value = '';

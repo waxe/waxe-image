@@ -4,7 +4,7 @@ import transaction
 from pyramid.view import view_config, view_defaults
 import pyramid.httpexceptions as exc
 
-from ..models import Tag
+from ..models import Category, Tag
 
 ROOT_PATH = '/home/lereskp/temp/waxe/client1'
 
@@ -23,7 +23,9 @@ class TagView(object):
         for t in tags:
             lis.append({
                 'name': t.name,
-                'id': t.tag_id
+                'id': t.tag_id,
+                'categories': [{'name': t.name, 'id': t.category_id}
+                               for t in t.categories]
             })
         return {
             'tags': lis,
@@ -41,7 +43,21 @@ class TagView(object):
             'id': t.tag_id,
         }
 
+    @view_config(route_name='tags_categories', request_method='POST')
+    def categories(self):
+        query = self.request.dbsession.query(Tag)
+        f = query.filter(Tag.tag_id == self.request.matchdict['tag_id']).one()
+        lis = []
+        tag_query = self.request.dbsession.query(Category)
+        for t_dict in self.request.json_body['categories']:
+            tag = tag_query.filter(Category.category_id == t_dict['id']).one()
+            lis.append(tag)
+
+        f.categories = lis
+        return [{'name': t.name, 'id': t.category_id} for t in lis]
+
 
 def includeme(config):
     config.add_route('tags', '/api/tags')
+    config.add_route('tags_categories', '/api/tags/{tag_id}/categories')
     config.scan(__name__)

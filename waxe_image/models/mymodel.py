@@ -57,4 +57,5 @@ class Category(Base):
     __tablename__ = 'category'
     category_id = Column(Integer, primary_key=True)
     name = Column(String)
-    tags = relationship("Tag", secondary=category_tag_table)
+    tags = relationship("Tag", secondary=category_tag_table,
+                        backref='categories')
