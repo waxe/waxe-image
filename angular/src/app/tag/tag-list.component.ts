@@ -6,19 +6,21 @@ import { TagService } from './tag.service';
 
 @Component({
   template: `
-  <br>
-  <br>
-  <form class="form-inline" (submit)="addTag(newTag)">
-    <input type="text" class="form-control" placeholder="Add tag" #newTag>
-    <button type="submit" class="btn btn-primary">Add</button>
-  </form>
-  <br>
-  <br>
-  <ul class="list-group">
-    <li class="list-group-item" *ngFor="let tag of tags">
-      <tag [tag]="tag"></tag>
-    </li>
-  </ul>
+  <div class="container">
+    <br>
+    <br>
+    <form class="form-inline" (submit)="addTag(newTag)">
+      <input type="text" class="form-control" placeholder="Add tag" #newTag>
+      <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+    <br>
+    <br>
+    <ul class="list-group">
+      <li class="list-group-item" *ngFor="let tag of tags">
+        <tag [tag]="tag"></tag>
+      </li>
+    </ul>
+  </div>
   `,
 })
 export class TagListComponent implements OnInit {

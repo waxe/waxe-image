@@ -11,15 +11,21 @@ import { TagService } from '../tag/tag.service';
 
 @Component({
   template: `
-  <div class="row">
-  <div class="col-sm-offset-2 col-sm-12">
-    <br>
-    <br>
-    <input class="form-control" placeholder="search..." #search>
-    <br>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-offset-2 col-sm-12">
+        <br>
+        <br>
+        <input class="form-control" placeholder="search..." #search>
+        <br>
+      </div>
+    </div>
   </div>
-    <div class="col-sm-3" *ngFor="let file of files">
-      <file [file]="file"></file>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-2" *ngFor="let file of files">
+        <file [file]="file"></file>
+      </div>
     </div>
   </div>`,
 })

@@ -20,9 +20,7 @@ import { Component } from '@angular/core';
     </div>
   </nav>
 
-  <div class="container">
-    <router-outlet></router-outlet>
-  </div>
+  <router-outlet></router-outlet>
   `,
 })
 export class AppComponent {}

@@ -6,19 +6,21 @@ import { CategoryService } from './category.service';
 
 @Component({
   template: `
-  <br>
-  <br>
-  <form class="form-inline" (submit)="addCategory(newCategory)">
-    <input type="text" class="form-control" placeholder="Add category" #newCategory>
-    <button type="submit" class="btn btn-primary">Add</button>
-  </form>
-  <br>
-  <br>
-  <ul class="list-group">
-    <li class="list-group-item" *ngFor="let category of categories">
-      <category [category]="category"></category>
-    </li>
-  </ul>
+  <div class="container">
+    <br>
+    <br>
+    <form class="form-inline" (submit)="addCategory(newCategory)">
+      <input type="text" class="form-control" placeholder="Add category" #newCategory>
+      <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+    <br>
+    <br>
+    <ul class="list-group">
+      <li class="list-group-item" *ngFor="let category of categories">
+        <category [category]="category"></category>
+      </li>
+    </ul>
+  </div>
   `,
 })
 export class CategoryListComponent implements OnInit {
