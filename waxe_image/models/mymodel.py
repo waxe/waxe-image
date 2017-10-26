@@ -44,12 +44,20 @@ category_tag_table = Table(
 )
 
 
+class Group(Base):
+    __tablename__ = 'group'
+    group_id = Column(Integer, primary_key=True)
+    name = Column(String)
+    files = relationship("File", backref="group")
+
+
 class File(Base):
     __tablename__ = 'file'
     file_id = Column(Integer, primary_key=True)
-    root_path = Column(String)
+    abs_path = Column(String)
     path = Column(String)
     webpath = Column(String)
+    group_id = Column(Integer, ForeignKey('group.group_id'))
     tags = relationship("Tag", secondary=file_tag_table)
 
 

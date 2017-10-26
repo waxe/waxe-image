@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import transaction
@@ -15,7 +16,7 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import MyModel, File, Tag
+from ..models import MyModel, File, Group, Tag
 
 
 def usage(argv):
@@ -23,6 +24,17 @@ def usage(argv):
     print('usage: %s <config_uri> [var=value]\n'
           '(example: "%s development.ini")' % (cmd, cmd))
     sys.exit(1)
+
+
+def get_files(path):
+    fs = []
+    for (dirpath, dirnames, filenames) in os.walk(path):
+        if dirpath.startswith('.'):
+            # Never get svn folder nor git but in general no hidden folders
+            continue
+        fs.extend([os.path.join(dirpath, f.decode('utf-8'))
+                   for f in filenames])
+    return fs
 
 
 def main(argv=sys.argv):
@@ -38,21 +50,31 @@ def main(argv=sys.argv):
 
     session_factory = get_session_factory(engine)
 
+    folders = json.loads(settings['folders'])
+
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
 
-        model = MyModel(name='one', value=1)
-        dbsession.add(model)
+        for folder in folders:
+            group_name = folder['name']
+            group = dbsession.query(Group).filter_by(
+                name=group_name).one_or_none()
+            if not group:
+                group = Group(name=folder['name'])
 
-        for i in range(10):
-            t = Tag(
-                name='tag%i' % i
-            )
-            dbsession.add(t)
-            f = File(
-                root_path='/root%i' % i,
-                path='/root1/file%i' % i,
-                webpath='img/x.png',
-            )
-            f.tags = [t]
-            dbsession.add(f)
+            path = folder['path']
+            webpath = folder['webpath']
+            filenames = get_files(path)
+            for filename in filenames:
+                # TODO: use regex to make sure we replace the starts of the
+                # filename
+                rel_path = filename.replace(path, '')
+                wp = webpath + rel_path
+                f = File(
+                    abs_path=filename,
+                    path=rel_path,
+                    webpath=wp,
+                )
+                f.group = group
+
+                dbsession.add(f)
