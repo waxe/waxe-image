@@ -21,7 +21,7 @@ import { TagService } from '../tag/tag.service';
       </div>
     </div>
   </div>
-  <div class="container-fluid">
+  <div class="container-fluid" infiniteScroll (scrolled)="onScroll()">
     <div class="row">
       <div class="col-sm-2" *ngFor="let file of files">
         <file [file]="file"></file>
@@ -32,6 +32,10 @@ import { TagService } from '../tag/tag.service';
 export class FileListComponent implements AfterViewInit, OnInit {
   files: IFile[] = [];
   allFiles: IFile[] = [];
+  matchingFiles: IFile[] = [];
+
+  private increment: number = 100;
+  private nb: number = 100;
 
   private inputValue: Observable<string>;
 
@@ -46,9 +50,11 @@ export class FileListComponent implements AfterViewInit, OnInit {
 
     this.inputValue.debounceTime(200).subscribe((value: string) => {
       const re = new RegExp(value, 'gi');
-      this.files = this.allFiles.filter((file: IFile) => {
+      this.matchingFiles = this.allFiles.filter((file: IFile) => {
         return this.fileMatch(re, file);
       });
+      this.nb = this.increment;
+      this.files = this.matchingFiles.slice(0, this.nb);
     });
   };
 
@@ -71,7 +77,13 @@ export class FileListComponent implements AfterViewInit, OnInit {
 
     this.fileService.getFiles().then((files: IFile[]) => {
       this.allFiles = files;
-      this.files = files;
+      this.matchingFiles = files;
+      this.files = files.slice(0, this.nb);
     });
+  }
+
+  onScroll() {
+    this.nb += this.increment;
+    this.files = this.matchingFiles.slice(0, this.nb);
   }
 }

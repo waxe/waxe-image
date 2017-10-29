@@ -1,7 +1,7 @@
 import { NgModule }      from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { LazyLoadImageModule } from 'ng-lazyload-image';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { FileComponent } from './file.component';
@@ -15,7 +15,7 @@ import { TokenfieldModule } from '../tokenfield/tokenfield.module';
 @NgModule({
   imports: [
     CommonModule,
-    LazyLoadImageModule,
+    InfiniteScrollModule,
     NgbModule,
     TokenfieldModule,
   ],
