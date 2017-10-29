@@ -16,7 +16,7 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import MyModel, File, Group, Tag
+from ..models import File, Group
 
 
 def usage(argv):

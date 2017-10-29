@@ -26,10 +26,6 @@ class FileView(object):
             'files': lis
         }
 
-    # @view_config(route_name='files_tags', request_method='OPTIONS')
-    # def tags_options(self):
-    #     return True
-
     @view_config(route_name='files_tags', request_method='POST')
     def tags(self):
         query = self.request.dbsession.query(File)
