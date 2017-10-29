@@ -58,7 +58,7 @@ class File(Base):
     path = Column(String)
     webpath = Column(String)
     group_id = Column(Integer, ForeignKey('group.group_id'))
-    tags = relationship("Tag", secondary=file_tag_table)
+    tags = relationship("Tag", secondary=file_tag_table, lazy='joined')
 
 
 class Category(Base):
