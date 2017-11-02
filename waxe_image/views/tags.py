@@ -45,19 +45,31 @@ class TagView(object):
 
     @view_config(route_name='tags_categories', request_method='POST')
     def categories(self):
-        query = self.request.dbsession.query(Tag)
-        f = query.filter(Tag.tag_id == self.request.matchdict['tag_id']).one()
+        tag = self.request.matchdict['tag']
         lis = []
         tag_query = self.request.dbsession.query(Category)
         for t_dict in self.request.json_body['categories']:
             tag = tag_query.filter(Category.category_id == t_dict['id']).one()
             lis.append(tag)
 
-        f.categories = lis
+        tag.categories = lis
         return [{'name': t.name, 'id': t.category_id} for t in lis]
+
+
+def load_tag(info, request):
+    match = info['match']
+    tag_id = int(match.pop('tag_id'))
+    query = request.dbsession.query(Tag)\
+                             .filter_by(tag_id=tag_id)
+    tag = query.one_or_none()
+    if not tag:
+        return False
+    match['tag'] = tag
+    return True
 
 
 def includeme(config):
     config.add_route('tags', '/api/tags')
-    config.add_route('tags_categories', '/api/tags/{tag_id}/categories')
+    config.add_route('tags_categories', '/api/tags/{tag_id:\d+}/categories',
+                     custom_predicates=(load_tag,))
     config.scan(__name__)

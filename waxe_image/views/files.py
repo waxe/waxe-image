@@ -1,5 +1,4 @@
 from pyramid.view import view_config, view_defaults
-import pyramid.httpexceptions as exc
 
 from ..models import File, Group, Tag
 
@@ -33,11 +32,7 @@ class FileView(object):
 
     @view_config(route_name='files', request_method='GET')
     def get(self):
-        group_id = self.request.matchdict.get('group_id')
-
-        query = self.request.dbsession.query(Group)\
-                    .filter_by(group_id=group_id)
-        group = query.one()
+        group = self.request.matchdict['group']
         lis = []
         for f in group.files:
             lis.append({
@@ -52,8 +47,7 @@ class FileView(object):
 
     @view_config(route_name='files_tags', request_method='POST')
     def tags(self):
-        query = self.request.dbsession.query(File)
-        f = query.filter(File.file_id == self.request.matchdict['file_id']).one()
+        f = self.request.matchdict['file']
         lis = []
         tag_query = self.request.dbsession.query(Tag)
         for t_dict in self.request.json_body['tags']:
@@ -64,8 +58,34 @@ class FileView(object):
         return [{'name': t.name, 'id': t.tag_id} for t in lis]
 
 
+def load_group(info, request):
+    match = info['match']
+    group_id = int(match.pop('group_id'))
+    query = request.dbsession.query(Group)\
+                             .filter_by(group_id=group_id)
+    group = query.one_or_none()
+    if not group:
+        return False
+    match['group'] = group
+    return True
+
+
+def load_file(info, request):
+    match = info['match']
+    file_id = int(match.pop('file_id'))
+    query = request.dbsession.query(File)\
+                             .filter_by(file_id=file_id)
+    file_obj = query.one_or_none()
+    if not file_obj:
+        return False
+    match['file'] = file_obj
+    return True
+
+
 def includeme(config):
-    config.add_route('files', '/api/groups/{group_id}/files')
-    config.add_route('files_tags', '/api/files/{file_id}/tags')
+    config.add_route('files', '/api/groups/{group_id:\d+}/files',
+                     custom_predicates=(load_group,))
+    config.add_route('files_tags', '/api/files/{file_id:\d+}/tags',
+                     custom_predicates=(load_file,))
     config.add_route('groups', '/api/groups')
     config.scan(__name__)

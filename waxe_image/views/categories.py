@@ -42,8 +42,7 @@ class CategoryView(object):
 
     @view_config(route_name='categories_tags', request_method='POST')
     def tags(self):
-        query = self.request.dbsession.query(Category)
-        c = query.filter(Category.category_id == self.request.matchdict['category_id']).one()
+        c = self.request.matchdict['category']
         lis = []
         tag_query = self.request.dbsession.query(Tag)
         for t_dict in self.request.json_body['tags']:
@@ -54,7 +53,21 @@ class CategoryView(object):
         return [{'name': t.name, 'id': t.tag_id} for t in lis]
 
 
+def load_category(info, request):
+    match = info['match']
+    category_id = int(match.pop('category_id'))
+    query = request.dbsession.query(Category)\
+                             .filter_by(category_id=category_id)
+    category = query.one_or_none()
+    if not category:
+        return False
+    match['category'] = category
+    return True
+
+
 def includeme(config):
     config.add_route('categories', '/api/categories')
-    config.add_route('categories_tags', '/api/categories/{category_id}/tags')
+    config.add_route('categories_tags',
+                     '/api/categories/{category_id:\d+}/tags',
+                     custom_predicates=(load_category,))
     config.scan(__name__)
