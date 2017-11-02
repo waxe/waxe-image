@@ -5,12 +5,15 @@ if (!baseHref.endsWith('/')) baseHref += '/';
 
 
 export const API_URLS: any = {
+  'groups': {
+    'list': `${baseHref}api/groups`,
+  },
   'files': {
     'file': {
       'get': `${baseHref}api/files/{file.id}`,
       'tags': `${baseHref}api/files/{file.id}/tags`,
     },
-    'list': `${baseHref}api/files`,
+    'list': `${baseHref}api/groups/{groupId}/files`,
   },
   'tags': {
     'list': `${baseHref}api/tags`,

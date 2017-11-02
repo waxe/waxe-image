@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { fromEvent } from 'rxjs/observable/fromEvent';
 import { Observable } from 'rxjs/Rx';
@@ -41,7 +42,7 @@ export class FileListComponent implements AfterViewInit, OnInit {
 
   @ViewChild('search') input: ElementRef;
 
-  constructor(private fileService: FileService, public tagService: TagService) {}
+  constructor(private route: ActivatedRoute, private fileService: FileService, public tagService: TagService) {}
 
 
   ngAfterViewInit() {
@@ -75,10 +76,13 @@ export class FileListComponent implements AfterViewInit, OnInit {
   ngOnInit() {
     this.tagService.getTags(true).subscribe((tags: ITag[]) => {});
 
-    this.fileService.getFiles().then((files: IFile[]) => {
-      this.allFiles = files;
-      this.matchingFiles = files;
-      this.files = files.slice(0, this.nb);
+    this.route.paramMap
+      .switchMap((params: ParamMap) => this.fileService.getFiles(+params.get('id')))
+      .subscribe((files: IFile[]) => {
+        this.nb = this.increment;
+        this.allFiles = files;
+        this.matchingFiles = files;
+        this.files = files.slice(0, this.nb);
     });
   }
 

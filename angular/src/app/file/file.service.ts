@@ -20,8 +20,9 @@ export class FileService {
 
   constructor(private http: HttpClient) { }
 
-  getFiles(): Promise<IFile[]> {
-    return this.http.get<IFilesResponse>(API_URLS.files.list)
+  getFiles(groupId: number): Promise<IFile[]> {
+    const url = API_URLS.files.list.supplant({'groupId': groupId});
+    return this.http.get<IFilesResponse>(url)
                .toPromise()
                .then(response => response.files as IFile[]);
   }
