@@ -128,6 +128,12 @@ export class TokenfieldComponent implements ControlValueAccessor {
 
   keyDown(event: any) {
     if (event.which === Key.Del && !this.input.nativeElement.value) {
+
+      if(this.typeahead && this.typeahead.isPopupOpen()) {
+        this.typeahead.dismissPopup();
+        return true;
+      }
+
       // Del: remove the last item
       event.preventDefault();
       this.typeahead.dismissPopup();
