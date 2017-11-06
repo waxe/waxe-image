@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import 'rxjs/add/operator/toPromise';
 
 import { IFile } from './file';
-import { ITag, ITagsResponse } from '../tag/tag';
+import { ITag, ITagResponse, ITagsResponse } from '../tag/tag';
 
 import { API_URLS } from '../urls.service';
 
@@ -27,10 +27,19 @@ export class FileService {
                .then(response => response.files as IFile[]);
   }
 
-  setTags(file: IFile, tags: ITag[]): Promise<ITag[]> {
-    const url = API_URLS.files.file.tags.supplant({'file.id': file.id});
-    return this.http.post<ITagsResponse>(url, {tags})
+  addTag(file: IFile, tag: ITag): Promise<ITag> {
+    const url = API_URLS.files.file.tag.supplant({'file.id': file.id, 'tag.id': tag.id});
+    return this.http.put<ITagResponse>(url, {})
                .toPromise()
-               .then(res => res.tags as ITag[]);
+               .then(res => {
+                 return res.tag as ITag;
+               });
+  }
+
+  removeTag(file: IFile, tag: ITag): Promise<void> {
+    const url = API_URLS.files.file.tag.supplant({'file.id': file.id, 'tag.id': tag.id});
+    return this.http.delete(url)
+               .toPromise()
+               .then(res => {});
   }
 }

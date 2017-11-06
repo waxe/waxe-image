@@ -94,6 +94,13 @@ export class TokenfieldComponent implements ControlValueAccessor {
   @Input() placeholder: string;
   @Input() create: Function;
 
+  @Input('addToken') _addToken: Function = this._noop;
+  @Input('removeToken') _removeToken: Function = this._noop;
+
+  _noop(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {resolve()});
+  }
+
   // The ngModel values of this field
   tokens: {}[] = [];
 
@@ -121,9 +128,10 @@ export class TokenfieldComponent implements ControlValueAccessor {
 
   remove(token: {}) {
     // Call when clicking on the cross to remove item
-    this.tokens.splice(this.tokens.indexOf(token['value']), 1);
-    this.onChange(this.tokens);
-    this.input.nativeElement.focus();
+    this.removeToken(token).then(() => {
+      this.onChange(this.tokens);
+      this.input.nativeElement.focus();
+    }).catch(()=>{});
   }
 
   keyDown(event: any) {
@@ -137,10 +145,12 @@ export class TokenfieldComponent implements ControlValueAccessor {
       // Del: remove the last item
       event.preventDefault();
       this.typeahead.dismissPopup();
-      // TODO: do nothing if this.tokens is already empty
-      this.tokens.pop();
-      this.onChange(this.tokens);
-      this.resetSize();
+      // Remove the last token
+      const token: any = this.tokens[this.tokens.length - 1]
+      this.removeToken(token).then(() => {
+        this.onChange(this.tokens);
+        this.resetSize();
+      }).catch(()=>{});
       return true;
     }
 
@@ -204,23 +214,45 @@ export class TokenfieldComponent implements ControlValueAccessor {
     return item['name'];
   }
 
+  addToken(token: any) {
+    return this._addToken(token).then((t: any) => {
+      this.tokens.push(t);
+    });
+  }
+
+  removeToken(token: any) {
+    if (this.tokens.length === 0) {
+      // Nothing to do
+      return new Promise<void>((resolve, reject) => {
+        reject();
+      });
+    }
+
+    return this._removeToken(token).then(() => {
+      const index: number = this.tokens.indexOf(token);
+      this.tokens.splice(index, 1);
+    });
+  }
+
   selectItem($e: any) {
     $e.preventDefault();
     if ($e.item.id) {
-      this.tokens.push($e.item);
-      this.onChange(this.tokens);
-      this.input.nativeElement.value = '';
-      this.input.nativeElement.focus();
-      this.resetSize();
+      this.addToken($e.item).then(() => {
+        this.onChange(this.tokens);
+        this.input.nativeElement.value = '';
+        this.input.nativeElement.focus();
+        this.resetSize();
+      });
     }
     else {
       this.create($e.item.value)
         .then((tag: any) => {
-          this.tokens.push(tag)
-          this.onChange(this.tokens);
-          this.input.nativeElement.value = '';
-          this.input.nativeElement.focus();
-          this.resetSize();
+          this.addToken(tag).then(() => {
+            this.onChange(this.tokens);
+            this.input.nativeElement.value = '';
+            this.input.nativeElement.focus();
+            this.resetSize();
+          });
         });
     }
   }

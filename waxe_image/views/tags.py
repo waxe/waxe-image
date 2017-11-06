@@ -5,6 +5,7 @@ from pyramid.view import view_config, view_defaults
 import pyramid.httpexceptions as exc
 
 from ..models import Category, Tag
+from .predicates import load_tag
 
 ROOT_PATH = '/home/lereskp/temp/waxe/client1'
 
@@ -54,18 +55,6 @@ class TagView(object):
 
         tag.categories = lis
         return [{'name': t.name, 'id': t.category_id} for t in lis]
-
-
-def load_tag(info, request):
-    match = info['match']
-    tag_id = int(match.pop('tag_id'))
-    query = request.dbsession.query(Tag)\
-                             .filter_by(tag_id=tag_id)
-    tag = query.one_or_none()
-    if not tag:
-        return False
-    match['tag'] = tag
-    return True
 
 
 def includeme(config):

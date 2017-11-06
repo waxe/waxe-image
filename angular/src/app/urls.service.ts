@@ -11,7 +11,7 @@ export const API_URLS: any = {
   'files': {
     'file': {
       'get': `${baseHref}api/files/{file.id}`,
-      'tags': `${baseHref}api/files/{file.id}/tags`,
+      'tag': `${baseHref}api/files/{file.id}/tags/{tag.id}`,
     },
     'list': `${baseHref}api/groups/{groupId}/files`,
   },

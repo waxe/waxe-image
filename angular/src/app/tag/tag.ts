@@ -7,6 +7,11 @@ export interface ITag {
 }
 
 
+export interface ITagResponse {
+  tag: ITag;
+}
+
+
 export interface ITagsResponse {
   tags: ITag[];
 }

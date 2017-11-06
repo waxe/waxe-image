@@ -1,6 +1,8 @@
+import pyramid.httpexceptions as exc
 from pyramid.view import view_config, view_defaults
 
 from ..models import File, Group, Tag
+from .predicates import load_tag, load_file, load_group
 
 
 @view_defaults(renderer='json')
@@ -57,29 +59,23 @@ class FileView(object):
         f.tags = lis
         return [{'name': t.name, 'id': t.tag_id} for t in lis]
 
+    @view_config(route_name='file_tag', request_method='PUT')
+    def tag(self):
+        f = self.request.matchdict['file']
+        t = self.request.matchdict['tag']
+        if t in f.tags:
+            raise exc.HTTPConflict()
+        f.tags.append(t)
+        return {'tag': {'name': t.name, 'id': t.tag_id}}
 
-def load_group(info, request):
-    match = info['match']
-    group_id = int(match.pop('group_id'))
-    query = request.dbsession.query(Group)\
-                             .filter_by(group_id=group_id)
-    group = query.one_or_none()
-    if not group:
-        return False
-    match['group'] = group
-    return True
-
-
-def load_file(info, request):
-    match = info['match']
-    file_id = int(match.pop('file_id'))
-    query = request.dbsession.query(File)\
-                             .filter_by(file_id=file_id)
-    file_obj = query.one_or_none()
-    if not file_obj:
-        return False
-    match['file'] = file_obj
-    return True
+    @view_config(route_name='file_tag', request_method='DELETE')
+    def remove_tag(self):
+        f = self.request.matchdict['file']
+        t = self.request.matchdict['tag']
+        if t not in f.tags:
+            raise exc.HTTPNotFound()
+        f.tags.remove(t)
+        return exc.HTTPNoContent()
 
 
 def includeme(config):
@@ -87,5 +83,7 @@ def includeme(config):
                      custom_predicates=(load_group,))
     config.add_route('files_tags', '/api/files/{file_id:\d+}/tags',
                      custom_predicates=(load_file,))
+    config.add_route('file_tag', '/api/files/{file_id:\d+}/tags/{tag_id:\d+}',
+                     custom_predicates=(load_file, load_tag))
     config.add_route('groups', '/api/groups')
     config.scan(__name__)
