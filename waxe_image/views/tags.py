@@ -34,8 +34,20 @@ class TagView(object):
 
     @view_config(route_name='tags', request_method='POST')
     def post(self):
+        name = self.request.json_body['name']
+        t = self.request.dbsession.query(Tag)\
+                .filter_by(name=name).one_or_none()
+        if t:
+            self.request.response.status = 400
+            return {
+                'errors': {
+                    # existName is the same key as angular validator
+                    'name': {'existName': {'value': name}}
+                }
+            }
+
         t = Tag()
-        t.name = self.request.json_body['name']
+        t.name = name
         self.request.dbsession.add(t)
         t = self.request.dbsession.query(Tag).filter_by(name=t.name).one()
 

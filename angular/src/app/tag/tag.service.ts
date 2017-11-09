@@ -36,6 +36,10 @@ export class TagService {
                     .toPromise().then(response => {
                       this.fetch();
                       return response as ITag;
+                    }).catch((res) => {
+                      // NOTE: should be parsed in angular 5
+                      // https://github.com/cwayfinder/angular/commit/d2ba570981b2763dcf25ae71888aa479fe385f0d
+                      return Promise.reject(JSON.parse(res['error']));
                     });
   }
 
