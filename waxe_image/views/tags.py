@@ -1,11 +1,8 @@
-import os
-import transaction
-
 from pyramid.view import view_config, view_defaults
 import pyramid.httpexceptions as exc
 
 from ..models import Category, Tag
-from .predicates import load_tag
+from .predicates import load_category, load_tag
 
 ROOT_PATH = '/home/lereskp/temp/waxe/client1'
 
@@ -68,9 +65,30 @@ class TagView(object):
         tag.categories = lis
         return [{'name': t.name, 'id': t.category_id} for t in lis]
 
+    @view_config(route_name='tag_category', request_method='PUT')
+    def category(self):
+        t = self.request.matchdict['tag']
+        c = self.request.matchdict['category']
+        if c in t.categories:
+            raise exc.HTTPConflict()
+        t.categories.append(c)
+        return {'category': {'name': c.name, 'id': c.category_id}}
+
+    @view_config(route_name='tag_category', request_method='DELETE')
+    def remove_category(self):
+        t = self.request.matchdict['tag']
+        c = self.request.matchdict['category']
+        if c not in t.categories:
+            raise exc.HTTPConflict()
+        t.categories.remove(c)
+        return exc.HTTPNoContent()
+
 
 def includeme(config):
     config.add_route('tags', '/api/tags')
     config.add_route('tags_categories', '/api/tags/{tag_id:\d+}/categories',
                      custom_predicates=(load_tag,))
+    config.add_route('tag_category',
+                     '/api/tags/{tag_id:\d+}/categories/{category_id:\d+}',
+                     custom_predicates=(load_tag, load_category))
     config.scan(__name__)

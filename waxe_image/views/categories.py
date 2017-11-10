@@ -5,6 +5,7 @@ from pyramid.view import view_config, view_defaults
 import pyramid.httpexceptions as exc
 
 from ..models import Category, Tag
+from .predicates import load_category
 
 
 @view_defaults(renderer='json')
@@ -63,18 +64,6 @@ class CategoryView(object):
 
         c.tags = lis
         return [{'name': t.name, 'id': t.tag_id} for t in lis]
-
-
-def load_category(info, request):
-    match = info['match']
-    category_id = int(match.pop('category_id'))
-    query = request.dbsession.query(Category)\
-                             .filter_by(category_id=category_id)
-    category = query.one_or_none()
-    if not category:
-        return False
-    match['category'] = category
-    return True
 
 
 def includeme(config):

@@ -1,4 +1,4 @@
-from ..models import File, Group, Tag
+from ..models import Category, File, Group, Tag
 
 
 def load_group(info, request):
@@ -34,4 +34,16 @@ def load_tag(info, request):
     if not tag:
         return False
     match['tag'] = tag
+    return True
+
+
+def load_category(info, request):
+    match = info['match']
+    category_id = int(match.pop('category_id'))
+    query = request.dbsession.query(Category)\
+                             .filter_by(category_id=category_id)
+    category = query.one_or_none()
+    if not category:
+        return False
+    match['category'] = category
     return True

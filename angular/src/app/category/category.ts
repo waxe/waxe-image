@@ -8,6 +8,11 @@ export interface ICategory {
 }
 
 
+export interface ICategoryResponse {
+  category: ICategory;
+}
+
+
 export interface ICategoriesResponse {
   categories: ICategory[];
 }
