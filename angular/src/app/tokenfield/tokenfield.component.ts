@@ -1,5 +1,5 @@
 // https://plnkr.co/edit/sZNw1lO2y3ZZR0GxLyjD?p=preview
-import {Component, NgModule, ViewChild, Input, Output, HostBinding, EventEmitter, Renderer, forwardRef, ElementRef } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, NgModule, ViewChild, Input, Output, HostBinding, EventEmitter, Renderer, forwardRef, ElementRef } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -71,7 +71,6 @@ function sizeToInt(size: string) {
       padding: 0;
       height: 28px;
       line-height: 28px;
-      width: 70px;
     }
 
     .remove-token {
@@ -83,13 +82,14 @@ function sizeToInt(size: string) {
     }
   `]
 })
-export class TokenfieldComponent implements ControlValueAccessor {
+export class TokenfieldComponent implements ControlValueAccessor, AfterViewInit {
 
   @ViewChild('input') input: any;
   @ViewChild(NgbTypeahead) typeahead: NgbTypeahead;
 
   @Output() changed = new EventEmitter();
   @Input() items: {}[];
+  @Input() width: string = '70px';
 
   @Input() placeholder: string;
   @Input() create: Function;
@@ -118,6 +118,10 @@ export class TokenfieldComponent implements ControlValueAccessor {
 
   registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
+
+  ngAfterViewInit() {
+    this.resetSize();
+  }
 
   onClick(event: any) {
     // When clicking on the tokenfield gives focus to the input
@@ -169,13 +173,13 @@ export class TokenfieldComponent implements ControlValueAccessor {
   resetSize() {
     // TODO: find how to subscribe onChange is this component and attach this
     // function
-    this.input.nativeElement.style.width = '70px';  // minimum width
+    this.input.nativeElement.style.width = this.width;  // minimum width
   }
 
   adjustInputWidth(){
     if (!this.input) return false;
 
-    this.input.nativeElement.style.width = '70px';  // minimum width
+    this.input.nativeElement.style.width = this.width;  // minimum width
     let style = window.getComputedStyle(this.elementRef.nativeElement);
 
     let width = this.elementRef.nativeElement.offsetWidth - this.input.nativeElement.offsetLeft;
@@ -192,7 +196,7 @@ export class TokenfieldComponent implements ControlValueAccessor {
       return items;
     }
     items.push({
-      'name': `Create new tag: ${term}`,
+      'name': `Create new item: ${term}`,
       'value': term,
       'id': null,
     });

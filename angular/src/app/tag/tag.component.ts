@@ -13,7 +13,7 @@ import { TagService } from './tag.service';
   selector: 'tag',
   template: `
     <h3>{{tag.name}}</h3>
-    <tokenfield [(ngModel)]="categoriesModel" (ngModelChange)="onChange($event)" placeholder="Add cat" [create]="create" [items]="categoryService.getCategories() | async"></tokenfield>
+    <tokenfield [(ngModel)]="categoriesModel" (ngModelChange)="onChange($event)" placeholder="Add category" width="110px" [create]="create" [items]="categoryService.getCategories() | async"></tokenfield>
   `,
 })
 export class TagComponent {
