@@ -30,8 +30,20 @@ class CategoryView(object):
 
     @view_config(route_name='categories', request_method='POST')
     def post(self):
+        name = self.request.json_body['name']
+        c = self.request.dbsession.query(Category)\
+                .filter_by(name=name).one_or_none()
+        if c:
+            self.request.response.status = 400
+            return {
+                'errors': {
+                    # existName is the same key as angular validator
+                    'name': {'existName': {'value': name}}
+                }
+            }
+
         c = Category()
-        c.name = self.request.json_body['name']
+        c.name = name
         self.request.dbsession.add(c)
         c = self.request.dbsession.query(Category).filter_by(name=c.name).one()
 
