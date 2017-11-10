@@ -97,8 +97,8 @@ export class TokenfieldComponent implements ControlValueAccessor, AfterViewInit 
   @Input('addToken') _addToken: Function = this._noop;
   @Input('removeToken') _removeToken: Function = this._noop;
 
-  _noop(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {resolve()});
+  _noop(item: any): Promise<void> {
+    return new Promise<void>((resolve, reject) => {resolve(item)});
   }
 
   // The ngModel values of this field
