@@ -5,7 +5,7 @@ from pyramid.view import view_config, view_defaults
 import pyramid.httpexceptions as exc
 
 from ..models import Category, Tag
-from .predicates import load_category
+from .predicates import load_category, load_tag
 
 
 @view_defaults(renderer='json')
@@ -53,17 +53,23 @@ class CategoryView(object):
             'id': c.category_id,
         }
 
-    @view_config(route_name='categories_tags', request_method='POST')
-    def tags(self):
+    @view_config(route_name='category_tag', request_method='PUT')
+    def tag(self):
         c = self.request.matchdict['category']
-        lis = []
-        tag_query = self.request.dbsession.query(Tag)
-        for t_dict in self.request.json_body['tags']:
-            tag = tag_query.filter(Tag.tag_id == t_dict['id']).one()
-            lis.append(tag)
+        t = self.request.matchdict['tag']
+        if t in c.tags:
+            raise exc.HTTPConflict()
+        c.tags.append(t)
+        return {'tag': {'name': t.name, 'id': t.tag_id}}
 
-        c.tags = lis
-        return [{'name': t.name, 'id': t.tag_id} for t in lis]
+    @view_config(route_name='category_tag', request_method='DELETE')
+    def remove_tag(self):
+        c = self.request.matchdict['category']
+        t = self.request.matchdict['tag']
+        if t not in c.tags:
+            raise exc.HTTPNotFound()
+        c.tags.remove(t)
+        return exc.HTTPNoContent()
 
 
 def includeme(config):
@@ -71,4 +77,7 @@ def includeme(config):
     config.add_route('categories_tags',
                      '/api/categories/{category_id:\d+}/tags',
                      custom_predicates=(load_category,))
+    config.add_route('category_tag',
+                     '/api/categories/{category_id:\d+}/tags/{tag_id:\d+}',
+                     custom_predicates=(load_category, load_tag))
     config.scan(__name__)

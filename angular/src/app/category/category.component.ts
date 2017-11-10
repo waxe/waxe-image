@@ -13,7 +13,7 @@ import { TagService } from '../tag/tag.service';
   selector: 'category',
   template: `
     <h3>{{category.name}}</h3>
-    <tokenfield [(ngModel)]="tagsModel" (ngModelChange)="onChange($event)" placeholder="Add tag" [create]="create" [items]="tagService.getTags() | async"></tokenfield>
+    <tokenfield [(ngModel)]="tagsModel" (ngModelChange)="onChange($event)" [addToken]="addTag" [removeToken]="removeTag" placeholder="Add tag" [create]="create" [items]="tagService.getTags() | async"></tokenfield>
   `,
 })
 export class CategoryComponent {
@@ -34,12 +34,21 @@ export class CategoryComponent {
   constructor(private categoryService: CategoryService, public tagService: TagService) {}
 
   onChange(e: Event) {
-    this.categoryService.setTags(this.category, this.tagsModel).then((tags: ITag[]) => this.category.tags = tags);
+    this.category.tags = this.tagsModel.slice(0);
+  }
+
+  public addTag = this._addTag.bind(this);
+  _addTag(tag: ITag) {
+    return this.categoryService.addTag(this.category, tag);
+  }
+
+  public removeTag = this._removeTag.bind(this);
+  _removeTag(tag: ITag) {
+    return this.categoryService.removeTag(this.category, tag);
   }
 
   public create = this._create.bind(this);
   private _create(name: string) {
     return this.tagService.create(name);
   }
-
 }

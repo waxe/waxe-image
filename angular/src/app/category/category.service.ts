@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import 'rxjs/add/operator/toPromise';
 import { Observable, ReplaySubject } from 'rxjs/Rx';
 
-import { ITag, ITagsResponse } from '../tag/tag';
+import { ITag, ITagResponse, ITagsResponse } from '../tag/tag';
 import { ICategory, ICategoriesResponse } from './category';
 
 import { API_URLS } from '../urls.service';
@@ -46,10 +46,19 @@ export class CategoryService {
                });
   }
 
-  setTags(category: ICategory, tags: ITag[]): Promise<ITag[]> {
-    const url = API_URLS.categories.category.tags.supplant({'category.id': category.id});
-    return this.http.post<ITagsResponse>(url, {tags})
+  addTag(category: ICategory, tag: ITag): Promise<ITag> {
+    const url = API_URLS.categories.category.tag.supplant({'category.id': category.id, 'tag.id': tag.id});
+    return this.http.put<ITagResponse>(url, {})
                .toPromise()
-               .then(res => res.tags as ITag[]);
+               .then(res => {
+                 return res.tag as ITag;
+               });
+  }
+
+  removeTag(category: ICategory, tag: ITag): Promise<void> {
+    const url = API_URLS.categories.category.tag.supplant({'category.id': category.id, 'tag.id': tag.id});
+    return this.http.delete(url)
+               .toPromise()
+               .then(res => {});
   }
 }

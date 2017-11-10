@@ -24,7 +24,7 @@ export const API_URLS: any = {
   'categories': {
     'list': `${baseHref}api/categories`,
     'category': {
-      'tags': `${baseHref}api/categories/{category.id}/tags`,
+      'tag': `${baseHref}api/categories/{category.id}/tags/{tag.id}`,
     },
   },
 }
