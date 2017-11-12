@@ -1,10 +1,7 @@
-import os
-import transaction
-
 from pyramid.view import view_config, view_defaults
 import pyramid.httpexceptions as exc
 
-from ..models import Category, Tag
+from ..models import Category
 from .predicates import load_category, load_tag
 
 
@@ -75,9 +72,6 @@ class CategoryView(object):
 
 def includeme(config):
     config.add_route('categories', '/api/categories')
-    config.add_route('categories_tags',
-                     '/api/categories/{category_id:\d+}/tags',
-                     custom_predicates=(load_category,))
     config.add_route('category_tag',
                      '/api/categories/{category_id:\d+}/tags/{tag_id:\d+}',
                      custom_predicates=(load_category, load_tag))

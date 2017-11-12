@@ -1,7 +1,7 @@
 import pyramid.httpexceptions as exc
 from pyramid.view import view_config, view_defaults
 
-from ..models import File, Group, Tag
+from ..models import Group
 from .predicates import load_tag, load_file, load_group
 
 
@@ -47,18 +47,6 @@ class FileView(object):
             'files': lis
         }
 
-    @view_config(route_name='files_tags', request_method='POST')
-    def tags(self):
-        f = self.request.matchdict['file']
-        lis = []
-        tag_query = self.request.dbsession.query(Tag)
-        for t_dict in self.request.json_body['tags']:
-            tag = tag_query.filter(Tag.tag_id == t_dict['id']).one()
-            lis.append(tag)
-
-        f.tags = lis
-        return [{'name': t.name, 'id': t.tag_id} for t in lis]
-
     @view_config(route_name='file_tag', request_method='PUT')
     def tag(self):
         f = self.request.matchdict['file']
@@ -82,8 +70,6 @@ class FileView(object):
 def includeme(config):
     config.add_route('files', '/api/groups/{group_id:\d+}/files',
                      custom_predicates=(load_group,))
-    config.add_route('files_tags', '/api/files/{file_id:\d+}/tags',
-                     custom_predicates=(load_file,))
     config.add_route('file_tag', '/api/files/{file_id:\d+}/tags/{tag_id:\d+}',
                      custom_predicates=(load_file, load_tag))
     config.add_route('groups', '/api/groups')
