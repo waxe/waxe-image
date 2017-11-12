@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { RouterModule }   from '@angular/router';
 
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
 import { AppComponent, RedirectHomeComponent }  from './app.component';
 
 import { CategoryModule } from './category/category.module';
@@ -25,6 +27,7 @@ import { ErrorInterceptor } from './http';
   imports:      [
     BrowserModule,
     HttpClientModule,
+    NgbModule.forRoot(),
     CategoryModule,
     FileModule,
     TagModule,

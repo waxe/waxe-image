@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
 import { Observable, Subject } from 'rxjs/Rx';
 
 import { IFile } from './file';
@@ -12,9 +14,21 @@ import { TagService } from '../tag/tag.service';
 @Component({
   selector: 'file',
   template: `
+   <ng-template #content let-d="dismiss">
+     <div class="modal-header">
+       <h4 class="modal-title">{{file.rel_path}}</h4>
+       <button type="button" class="close" aria-label="Close" (click)="d()">
+         <span aria-hidden="true">&times;</span>
+       </button>
+     </div>
+     <div class="modal-body">
+        <img [src]="file.web_path">
+     </div>
+   </ng-template>
+
     <div class="card">
       <div class="card-img-top">
-        <img [src]="file.thumbnail_path">
+        <img [src]="file.thumbnail_path" (click)="open(content)">
       </div>
       <div class="card-body">
         <p class="card-text text-center">{{file.rel_path}}</p>
@@ -40,7 +54,7 @@ export class FileComponent {
     return this._file;
   }
 
-  constructor(private fileService: FileService, public tagService: TagService) {}
+  constructor(public modalService: NgbModal, private fileService: FileService, public tagService: TagService) {}
 
   onChange(e: Event) {
     this.file.tags = this.tagsModel.slice(0);
@@ -59,6 +73,10 @@ export class FileComponent {
   public create = this._create.bind(this);
   private _create(name: string) {
     return this.tagService.create(name);
+  }
+
+  open(content) {
+    this.modalService.open(content, {'size': 'lg'});
   }
 
 }
