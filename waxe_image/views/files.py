@@ -64,8 +64,9 @@ class FileView(object):
         f = self.request.matchdict['file']
         t = self.request.matchdict['tag']
         if t in f.tags:
-            raise exc.HTTPConflict()
-        f.tags.append(t)
+            self.request.response.status = 409
+        else:
+            f.tags.append(t)
         return {'tag': {'name': t.name, 'id': t.tag_id}}
 
     @view_config(route_name='file_tag', request_method='DELETE')

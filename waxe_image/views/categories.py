@@ -58,8 +58,9 @@ class CategoryView(object):
         c = self.request.matchdict['category']
         t = self.request.matchdict['tag']
         if t in c.tags:
-            raise exc.HTTPConflict()
-        c.tags.append(t)
+            self.request.response.status = 409
+        else:
+            c.tags.append(t)
         return {'tag': {'name': t.name, 'id': t.tag_id}}
 
     @view_config(route_name='category_tag', request_method='DELETE')

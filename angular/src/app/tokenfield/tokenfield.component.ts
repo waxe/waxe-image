@@ -221,7 +221,9 @@ export class TokenfieldComponent implements ControlValueAccessor, AfterViewInit 
   addToken(token: any) {
     return this._addToken(token).then((t: any) => {
       this.tokens.push(t);
-    });
+    })
+    // Nothing to do in catch it should be handled before
+    .catch(()=>'');
   }
 
   removeToken(token: any) {
@@ -235,7 +237,9 @@ export class TokenfieldComponent implements ControlValueAccessor, AfterViewInit 
     return this._removeToken(token).then(() => {
       const index: number = this.tokens.indexOf(token);
       this.tokens.splice(index, 1);
-    });
+    })
+    // Nothing to do in catch it should be handled before
+    .catch(()=>'');
   }
 
   selectItem($e: any) {

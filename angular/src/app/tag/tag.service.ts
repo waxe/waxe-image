@@ -49,6 +49,13 @@ export class TagService {
                .toPromise()
                .then(res => {
                  return res.category as ICategory;
+               }).catch(res => {
+                 if (res.status === 409) {
+                   // Someone else already added the tag, just add it
+                   const error: {} = JSON.parse(res['error']);
+                   return Promise.resolve(error['category'] as ICategory);
+                 }
+                 return Promise.reject(null);
                });
   }
 
@@ -56,7 +63,14 @@ export class TagService {
     const url = API_URLS.tags.tag.category.supplant({'tag.id': tag.id, 'category.id': category.id});
     return this.http.delete(url)
                .toPromise()
-               .then(res => {});
+               .then(res => {})
+               .catch(res => {
+                  if (res.status === 404) {
+                    // Someone else already removed the tag, just remove it
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(null);
+               });
   }
 
 }

@@ -70,8 +70,9 @@ class TagView(object):
         t = self.request.matchdict['tag']
         c = self.request.matchdict['category']
         if c in t.categories:
-            raise exc.HTTPConflict()
-        t.categories.append(c)
+            self.request.response.status = 409
+        else:
+            t.categories.append(c)
         return {'category': {'name': c.name, 'id': c.category_id}}
 
     @view_config(route_name='tag_category', request_method='DELETE')
@@ -79,7 +80,7 @@ class TagView(object):
         t = self.request.matchdict['tag']
         c = self.request.matchdict['category']
         if c not in t.categories:
-            raise exc.HTTPConflict()
+            raise exc.HTTPNotFound()
         t.categories.remove(c)
         return exc.HTTPNoContent()
 
