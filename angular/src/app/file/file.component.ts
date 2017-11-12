@@ -22,7 +22,20 @@ import { TagService } from '../tag/tag.service';
        </button>
      </div>
      <div class="modal-body">
+      <div class="container">
+        <div class="row small">
+          <div class="col-sm-6">
+            Creation date: {{file.creation_date | date:'MMM dd, y hh:mm a'}}
+          </div>
+          <div class="col-sm-6">
+            Modification date: {{file.modification_date | date:'MMM dd, y hh:mm a'}}
+          </div>
+        </div>
+      </div>
+      <br class="small">
+      <div class="text-center">
         <img [src]="file.web_path">
+      </div>
      </div>
    </ng-template>
 

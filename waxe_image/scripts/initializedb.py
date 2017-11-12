@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import transaction
+from datetime import datetime
 
 from pyramid.paster import (
     get_appsettings,
@@ -77,6 +78,10 @@ def main(argv=sys.argv):
                     rel_path=rel_path,
                     web_path=wp,
                     thumbnail_path=tp,
+                    creation_date=datetime.fromtimestamp(
+                        os.path.getctime(filename)),
+                    modification_date=datetime.fromtimestamp(
+                        os.path.getmtime(filename)),
                 )
                 f.group = group
 

@@ -1,5 +1,6 @@
 from sqlalchemy import (
     Column,
+    DateTime,
     ForeignKey,
     Integer,
     String,
@@ -47,6 +48,9 @@ class File(Base):
     rel_path = Column(String)
     thumbnail_path = Column(String)
     web_path = Column(String)
+
+    creation_date = Column(DateTime, nullable=True)
+    modification_date = Column(DateTime, nullable=True)
 
     group_id = Column(Integer, ForeignKey('group.group_id'))
     tags = relationship("Tag", secondary=file_tag_table, lazy='joined')
