@@ -54,6 +54,8 @@ class File(Base):
     modification_date = Column(DateTime, nullable=True)
     modification_author = Column(String, nullable=True)
 
+    md5sum = Column(String)
+
     group_id = Column(Integer, ForeignKey('group.group_id'))
     tags = relationship("Tag", secondary=file_tag_table, lazy='joined')
 

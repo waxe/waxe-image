@@ -50,5 +50,6 @@ setup(name='waxe-image',
       main = waxe_image:main
       [console_scripts]
       initialize_waxe-image_db = waxe_image.scripts.initializedb:main
+      update_waxe-image_db = waxe_image.scripts.updatedb:main
       """,
       )
