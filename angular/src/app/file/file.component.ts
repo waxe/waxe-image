@@ -25,10 +25,10 @@ import { TagService } from '../tag/tag.service';
       <div class="container">
         <div class="row small">
           <div class="col-sm-6">
-            Creation date: {{file.creation_date | date:'MMM dd, y hh:mm a'}}
+            Created on {{file.creation_date | date:'MMM dd, y hh:mm a'}} by {{file.creation_author}}
           </div>
           <div class="col-sm-6">
-            Modification date: {{file.modification_date | date:'MMM dd, y hh:mm a'}}
+            Modified on {{file.modification_date | date:'MMM dd, y hh:mm a'}} by {{file.modification_author}}
           </div>
         </div>
       </div>

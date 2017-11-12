@@ -1,5 +1,6 @@
 import json
 import os
+import pwd
 import re
 import sys
 import transaction
@@ -69,6 +70,8 @@ def main(argv=sys.argv):
             thumbnail_path = folder['thumbnail_path']
             filenames = get_files(path)
             for filename in filenames:
+                st = os.stat(filename)
+                ownername = pwd.getpwuid(st.st_uid).pw_name
                 rel_path = re.sub('^%s' % re.escape(path), '', filename)
                 wp = web_path + rel_path
                 tp = thumbnail_path + rel_path
@@ -79,8 +82,10 @@ def main(argv=sys.argv):
                     thumbnail_path=tp,
                     creation_date=datetime.fromtimestamp(
                         os.path.getctime(filename)),
+                    creation_author=ownername,
                     modification_date=datetime.fromtimestamp(
                         os.path.getmtime(filename)),
+                    modification_author=ownername,
                 )
                 f.group = group
 

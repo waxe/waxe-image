@@ -43,7 +43,9 @@ class FileView(object):
                 'thumbnail_path': f.thumbnail_path,
                 'web_path': f.web_path,
                 'creation_date': f.creation_date,
+                'creation_author': f.creation_author,
                 'modification_date': f.modification_date,
+                'modification_author': f.modification_author,
                 'tags': [{'name': t.name, 'id': t.tag_id} for t in f.tags],
             })
         return {

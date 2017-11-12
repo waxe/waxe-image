@@ -50,7 +50,9 @@ class File(Base):
     web_path = Column(String)
 
     creation_date = Column(DateTime, nullable=True)
+    creation_author = Column(String, nullable=True)
     modification_date = Column(DateTime, nullable=True)
+    modification_author = Column(String, nullable=True)
 
     group_id = Column(Integer, ForeignKey('group.group_id'))
     tags = relationship("Tag", secondary=file_tag_table, lazy='joined')
