@@ -22,6 +22,7 @@ export class RedirectHomeComponent {
 @Component({
   selector: 'app-root',
   template: `
+  <message></message>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">Waxe image</a>
     <div class="collapse navbar-collapse">
@@ -38,7 +39,6 @@ export class RedirectHomeComponent {
       </ul>
     </div>
   </nav>
-
   <router-outlet></router-outlet>
   `,
 })
