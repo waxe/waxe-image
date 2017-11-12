@@ -60,7 +60,7 @@ export class FileListComponent implements AfterViewInit, OnInit {
   };
 
   fileMatch(re: RegExp, file: IFile) {
-    if (re.test(file.path)) {
+    if (re.test(file.rel_path)) {
       return true;
     }
 
