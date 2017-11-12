@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sys
 import transaction
 from datetime import datetime
@@ -68,9 +69,7 @@ def main(argv=sys.argv):
             thumbnail_path = folder['thumbnail_path']
             filenames = get_files(path)
             for filename in filenames:
-                # TODO: use regex to make sure we replace the starts of the
-                # filename
-                rel_path = filename.replace(path, '')
+                rel_path = re.sub('^%s' % re.escape(path), '', filename)
                 wp = web_path + rel_path
                 tp = thumbnail_path + rel_path
                 f = File(
