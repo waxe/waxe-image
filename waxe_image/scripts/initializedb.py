@@ -63,17 +63,20 @@ def main(argv=sys.argv):
                 group = Group(name=folder['name'])
 
             path = folder['path']
-            webpath = folder['webpath']
+            web_path = folder['web_path']
+            thumbnail_path = folder['thumbnail_path']
             filenames = get_files(path)
             for filename in filenames:
                 # TODO: use regex to make sure we replace the starts of the
                 # filename
                 rel_path = filename.replace(path, '')
-                wp = webpath + rel_path
+                wp = web_path + rel_path
+                tp = thumbnail_path + rel_path
                 f = File(
                     abs_path=filename,
-                    path=rel_path,
-                    webpath=wp,
+                    rel_path=rel_path,
+                    web_path=wp,
+                    thumbnail_path=tp,
                 )
                 f.group = group
 

@@ -14,12 +14,12 @@ import { TagService } from '../tag/tag.service';
   template: `
     <div class="card">
       <div class="card-img-top">
-        <img [src]="file.webpath">
-        <span *ngFor="let t of file.tags">{{t.name}}</span>
+        <img [src]="file.thumbnail_path">
       </div>
       <div class="card-body">
-        <p class="card-text">{{file.path}}</p>
+        <p class="card-text text-center">{{file.rel_path}}</p>
         <tokenfield [(ngModel)]="tagsModel" (ngModelChange)="onChange($event)" [addToken]="addTag" [removeToken]="removeTag" placeholder="Add tag" [create]="create" [items]="tagService.getTags() | async"></tokenfield>
+        <div class="text-right small"><a [href]="file.web_path" target="_blank">Link</a></div>
       </div>
   </div>`,
 })

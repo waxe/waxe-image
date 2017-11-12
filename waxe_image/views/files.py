@@ -39,8 +39,9 @@ class FileView(object):
         for f in group.files:
             lis.append({
                 'id': f.file_id,
-                'path': f.path,
-                'webpath': f.webpath,
+                'rel_path': f.rel_path,
+                'thumbnail_path': f.thumbnail_path,
+                'web_path': f.web_path,
                 'tags': [{'name': t.name, 'id': t.tag_id} for t in f.tags],
             })
         return {

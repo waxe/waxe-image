@@ -44,8 +44,10 @@ class File(Base):
     __tablename__ = 'file'
     file_id = Column(Integer, primary_key=True)
     abs_path = Column(String)
-    path = Column(String)
-    webpath = Column(String)
+    rel_path = Column(String)
+    thumbnail_path = Column(String)
+    web_path = Column(String)
+
     group_id = Column(Integer, ForeignKey('group.group_id'))
     tags = relationship("Tag", secondary=file_tag_table, lazy='joined')
 
