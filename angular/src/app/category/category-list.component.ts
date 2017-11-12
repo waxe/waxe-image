@@ -61,7 +61,7 @@ export class CategoryListComponent implements OnInit {
     });
   }
 
-  addCategory(input: HTMLInputElement) {
+  addCategory() {
     if (this.categoryForm.invalid) {
       return;
     }
