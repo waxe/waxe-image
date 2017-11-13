@@ -14,7 +14,7 @@ class TagView(object):
     @view_config(route_name='tags', request_method='GET')
     def get(self):
         query = self.request.dbsession.query(Tag)
-        tags = query.all()
+        tags = query.order_by(Tag.name).all()
         lis = []
         for t in tags:
             lis.append({

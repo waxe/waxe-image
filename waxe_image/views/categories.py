@@ -14,7 +14,7 @@ class CategoryView(object):
     @view_config(route_name='categories', request_method='GET')
     def get(self):
         query = self.request.dbsession.query(Category)
-        categories = query.all()
+        categories = query.order_by(Category.name).all()
         lis = []
         for c in categories:
             lis.append({

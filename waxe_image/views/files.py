@@ -14,7 +14,7 @@ class GroupView(object):
     @view_config(route_name='groups', request_method='GET')
     def get(self):
         query = self.request.dbsession.query(Group)
-        groups = query.all()
+        groups = query.order_by(Group.group_id).all()
         lis = []
         for g in groups:
             lis.append({

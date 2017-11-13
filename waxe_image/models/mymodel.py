@@ -38,7 +38,7 @@ class Group(Base):
     __tablename__ = 'group'
     group_id = Column(Integer, primary_key=True)
     name = Column(String)
-    files = relationship("File", backref="group")
+    files = relationship("File", backref="group", order_by="File.rel_path")
 
 
 class File(Base):
