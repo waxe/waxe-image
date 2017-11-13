@@ -39,7 +39,7 @@ def get_files(path):
         if dirpath.startswith('.'):
             # Never get svn folder nor git but in general no hidden folders
             continue
-        fs.extend([os.path.join(dirpath, f.decode('utf-8'))
+        fs.extend([os.path.join(dirpath, f)
                    for f in filenames])
     return fs
 
@@ -97,7 +97,7 @@ def doit(dbsession, group, path, web_path, thumbnail_path):
             creation_author=cdata['author'],
             modification_date=mdata['date'],
             modification_author=mdata['author'],
-            md5sum=hashlib.md5(filename).hexdigest()
+            md5sum=md5sum(filename)
         )
         f.group = group
         dbsession.add(f)
