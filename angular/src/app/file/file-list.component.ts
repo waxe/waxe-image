@@ -56,22 +56,27 @@ export class FileListComponent implements AfterViewInit, OnDestroy, OnInit {
     this.inputValue = fromEvent(this.input.nativeElement, 'input', ($event) => $event.target.value);
 
 
-    this.inputValue.debounceTime(400).subscribe((value: string) => {
-      const re = new RegExp(value, 'i');
+    this.inputValue.debounceTime(200).subscribe((value: string) => {
+      if (value !== '') {
+        const re = new RegExp(value, 'i');
 
-      let matchingTags = this.tags.filter((tag: ITag) => re.test(tag.name));
+        let matchingTags = this.tags.filter((tag: ITag) => re.test(tag.name));
 
-      this.categories
-           .filter((category: ICategory) => re.test(category.name))
-           .map((category: ICategory) => category.tags.filter((t: ITag) => {
-             if (matchingTags.indexOf(t) === -1) {
-               matchingTags.push(t);
-             }
-           }));
+        this.categories
+             .filter((category: ICategory) => re.test(category.name))
+             .map((category: ICategory) => category.tags.filter((t: ITag) => {
+               if (matchingTags.indexOf(t) === -1) {
+                 matchingTags.push(t);
+               }
+             }));
 
-      this.matchingFiles = this.allFiles.filter((file: IFile) => {
-        return this.fileMatch(re, file, matchingTags.map((tag: ITag) => tag.id));
-      });
+        this.matchingFiles = this.allFiles.filter((file: IFile) => {
+          return this.fileMatch(re, file, matchingTags.map((tag: ITag) => tag.id));
+        });
+      }
+      else {
+        this.matchingFiles = this.allFiles;
+      }
       this.nb = this.increment;
       this.files = this.matchingFiles.slice(0, this.nb);
     });
