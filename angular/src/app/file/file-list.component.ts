@@ -97,6 +97,8 @@ export class FileListComponent implements AfterViewInit, OnInit {
     this.route.paramMap
       .switchMap((params: ParamMap) => this.fileService.getFiles(+params.get('id')))
       .subscribe((files: IFile[]) => {
+        // Empty the search
+        this.input.nativeElement.value = '';
         this.nb = this.increment;
         this.allFiles = files;
         this.matchingFiles = files;
