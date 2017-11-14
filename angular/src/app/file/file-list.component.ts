@@ -4,10 +4,12 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { fromEvent } from 'rxjs/observable/fromEvent';
 import { Observable } from 'rxjs/Rx';
 
+import { ICategory } from '../category/category';
 import { IFile } from './file';
 import { ITag } from '../tag/tag';
 import { FileService } from './file.service';
 import { TagService } from '../tag/tag.service';
+import { CategoryService } from '../category/category.service';
 
 
 @Component({
@@ -34,6 +36,8 @@ export class FileListComponent implements AfterViewInit, OnInit {
   files: IFile[] = [];
   allFiles: IFile[] = [];
   matchingFiles: IFile[] = [];
+  categories: ICategory[] = [];
+  tags: ITag[] = [];
 
   private increment: number = 100;
   private nb: number = 100;
@@ -42,39 +46,53 @@ export class FileListComponent implements AfterViewInit, OnInit {
 
   @ViewChild('search') input: ElementRef;
 
-  constructor(private route: ActivatedRoute, private fileService: FileService, public tagService: TagService) {}
+  constructor(private route: ActivatedRoute, private categoryService: CategoryService, private fileService: FileService, public tagService: TagService) {}
 
 
   ngAfterViewInit() {
     this.inputValue = fromEvent(this.input.nativeElement, 'input', ($event) => $event.target.value);
 
 
-    this.inputValue.debounceTime(200).subscribe((value: string) => {
-      const re = new RegExp(value, 'gi');
+    this.inputValue.debounceTime(400).subscribe((value: string) => {
+      const re = new RegExp(value, 'i');
+
+      let matchingTags = this.tags.filter((tag: ITag) => re.test(tag.name));
+
+      this.categories
+           .filter((category: ICategory) => re.test(category.name))
+           .map((category: ICategory) => category.tags.filter((t: ITag) => {
+             if (matchingTags.indexOf(t) === -1) {
+               matchingTags.push(t);
+             }
+           }));
+
       this.matchingFiles = this.allFiles.filter((file: IFile) => {
-        return this.fileMatch(re, file);
+        return this.fileMatch(re, file, matchingTags.map((tag: ITag) => tag.id));
       });
       this.nb = this.increment;
       this.files = this.matchingFiles.slice(0, this.nb);
     });
   };
 
-  fileMatch(re: RegExp, file: IFile) {
+  fileMatch(re: RegExp, file: IFile, matchingTagIds: number[]) {
     if (re.test(file.rel_path)) {
       return true;
     }
 
-    const tags: ITag[] = file.tags.filter((tag: ITag) => {
-      return re.test(tag.name);
-    })
-
-    if(tags.length) {
-      return true;
+    for(let tag of file.tags) {
+      if (matchingTagIds.indexOf(tag.id) !== -1) {
+        return true;
+      }
     }
   }
 
   ngOnInit() {
-    this.tagService.getTags(true).subscribe((tags: ITag[]) => {});
+    this.tagService.getTags(true).subscribe((tags: ITag[]) => {
+      this.tags = tags;
+    });
+    this.categoryService.getCategories(true).subscribe((categories: ICategory[]) => {
+      this.categories = categories;
+    });
 
     this.route.paramMap
       .switchMap((params: ParamMap) => this.fileService.getFiles(+params.get('id')))
