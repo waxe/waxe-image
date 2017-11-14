@@ -1,8 +1,8 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { fromEvent } from 'rxjs/observable/fromEvent';
-import { Observable } from 'rxjs/Rx';
+import { Observable, Subscription } from 'rxjs/Rx';
 
 import { ICategory } from '../category/category';
 import { IFile } from './file';
@@ -32,12 +32,15 @@ import { CategoryService } from '../category/category.service';
     </div>
   </div>`,
 })
-export class FileListComponent implements AfterViewInit, OnInit {
+export class FileListComponent implements AfterViewInit, OnDestroy, OnInit {
   files: IFile[] = [];
-  allFiles: IFile[] = [];
-  matchingFiles: IFile[] = [];
-  categories: ICategory[] = [];
-  tags: ITag[] = [];
+  private allFiles: IFile[] = [];
+  private matchingFiles: IFile[] = [];
+  private categories: ICategory[] = [];
+  private tags: ITag[] = [];
+
+  private tagSub: Subscription;
+  private categorySub: Subscription;
 
   private increment: number = 100;
   private nb: number = 100;
@@ -87,10 +90,10 @@ export class FileListComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit() {
-    this.tagService.getTags(true).subscribe((tags: ITag[]) => {
+    this.tagSub = this.tagService.getTags(true).subscribe((tags: ITag[]) => {
       this.tags = tags;
     });
-    this.categoryService.getCategories(true).subscribe((categories: ICategory[]) => {
+    this.categorySub = this.categoryService.getCategories(true).subscribe((categories: ICategory[]) => {
       this.categories = categories;
     });
 
@@ -104,6 +107,11 @@ export class FileListComponent implements AfterViewInit, OnInit {
         this.matchingFiles = files;
         this.files = files.slice(0, this.nb);
     });
+  }
+
+  ngOnDestroy() {
+    this.tagSub.unsubscribe();
+    this.categorySub.unsubscribe();
   }
 
   onScroll() {
