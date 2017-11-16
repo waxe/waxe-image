@@ -7,6 +7,9 @@ import re
 import sys
 import transaction
 
+from paste.util.import_string import eval_import
+
+
 from pyramid.paster import (
     get_appsettings,
     setup_logging,
@@ -33,14 +36,26 @@ def usage(argv):
     sys.exit(1)
 
 
-def get_files(path):
+def _noop_filter(path):
+    return True
+
+
+def get_files(path, settings):
+    file_filter_function = settings.get('file_filter_function')
+    folder_filter_function = settings.get('folder_filter_function')
+    file_filter = (eval_import(file_filter_function)
+                   if file_filter_function else _noop_filter)
+    folder_filter = (eval_import(folder_filter_function)
+                     if folder_filter_function else _noop_filter)
     fs = []
     for (dirpath, dirnames, filenames) in os.walk(path):
-        if dirpath.startswith('.'):
-            # Never get svn folder nor git but in general no hidden folders
+        basename = os.path.basename(dirpath)
+        if basename.startswith('.') or not folder_filter(dirpath):
+            del dirnames[:]
             continue
         fs.extend([os.path.join(dirpath, f)
-                   for f in filenames])
+                   for f in filenames
+                   if file_filter(os.path.join(dirpath, f))])
     return fs
 
 
@@ -58,10 +73,9 @@ def get_modification_data(filename):
     }
 
 
-def doit(dbsession, group, path, web_path, thumbnail_path):
+def doit(dbsession, fs_files, group, path, web_path, thumbnail_path):
 
     db_files = group.files
-    fs_files = get_files(path)
 
     done = []
 
@@ -129,4 +143,5 @@ def main(argv=sys.argv):
             path = folder['path']
             web_path = folder['web_path']
             thumbnail_path = folder['thumbnail_path']
-            doit(dbsession, group, path, web_path, thumbnail_path)
+            fs_files = get_files(path, settings)
+            doit(dbsession, fs_files, group, path, web_path, thumbnail_path)
