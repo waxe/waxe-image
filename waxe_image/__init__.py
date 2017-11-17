@@ -3,6 +3,8 @@ import datetime
 from pyramid.config import Configurator
 from pyramid.renderers import JSON
 
+__version__ = '0.0 .1-alpha-1'
+
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
