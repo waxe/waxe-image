@@ -5,3 +5,4 @@ transaction
 zope.sqlalchemy
 waitress
 paste
+requests
