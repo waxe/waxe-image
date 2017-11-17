@@ -11,7 +11,7 @@ API_RELEASES_URL = 'https://api.github.com/repos/waxe/waxe-image/releases'
 NG_BUILD_FOLDER = 'website'
 
 
-def create_ng_build_folder():
+def main():
     if os.path.isdir(NG_BUILD_FOLDER):
         shutil.rmtree(NG_BUILD_FOLDER)
     r = requests.get(API_RELEASES_URL)
@@ -45,7 +45,3 @@ def create_ng_build_folder():
 
     z = zipfile.ZipFile(StringIO.StringIO(r.content))
     z.extractall(NG_BUILD_FOLDER)
-
-
-if __name__ == '__main__':
-    create_ng_build_folder()
