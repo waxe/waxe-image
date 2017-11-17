@@ -3,7 +3,7 @@ import os
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(here, 'README.txt')) as f:
+with open(os.path.join(here, 'README.md')) as f:
     README = f.read()
 with open(os.path.join(here, 'CHANGES.txt')) as f:
     CHANGES = f.read()
@@ -25,6 +25,11 @@ tests_require = [
     'pytest-cov',
     ]
 
+dev_require = [
+    'requests',
+    'github3.py',
+]
+
 setup(name='waxe-image',
       version='0.0',
       description='waxe-image',
@@ -44,6 +49,7 @@ setup(name='waxe-image',
       zip_safe=False,
       extras_require={
           'testing': tests_require,
+          'dev': dev_require,
       },
       install_requires=requires,
       entry_points="""\
@@ -52,5 +58,6 @@ setup(name='waxe-image',
       [console_scripts]
       initialize_waxe-image_db = waxe_image.scripts.initializedb:main
       update_waxe-image_db = waxe_image.scripts.updatedb:main
+      waxe-image_get_ng_build = waxe_image.scripts.get_ng_build:main
       """,
       )
