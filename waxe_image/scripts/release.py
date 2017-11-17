@@ -1,11 +1,10 @@
 import getpass
-from github3 import login
 
 from waxe_image import __version__
 
 
 def main():
-
+    from github3 import login
     pwd = getpass.getpass('Github password for lereskp: ')
     gh = login('lereskp', password=pwd)
     repo = gh.repository('waxe', 'waxe-image')
