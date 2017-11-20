@@ -1,11 +1,9 @@
-# Installation
-
-
-## Requirements
+# Requirements
 - Python 2.7
 - virtualenv
 
 
+# Installation
 ```
 mkdir mywebsite
 cd mywebsite
