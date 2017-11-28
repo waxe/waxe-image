@@ -7,6 +7,7 @@ if (!baseHref.endsWith('/')) baseHref += '/';
 export const API_URLS: any = {
   'groups': {
     'list': `${baseHref}api/groups`,
+    'group': `${baseHref}api/groups/{group.id}`,
   },
   'files': {
     'file': {

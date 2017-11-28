@@ -38,6 +38,10 @@ class Group(Base):
     __tablename__ = 'group'
     group_id = Column(Integer, primary_key=True)
     name = Column(String)
+    abs_path = Column(String)
+    web_path = Column(String)
+    thumbnail_path = Column(String)
+
     files = relationship("File", backref="group", order_by="File.rel_path")
 
 

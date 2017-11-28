@@ -1,8 +1,19 @@
+import colander
 import pyramid.httpexceptions as exc
 from pyramid.view import view_config, view_defaults
 
 from ..models import Group
 from .predicates import load_tag, load_file, load_group
+
+from .validation import errors_to_angular
+
+
+
+class GroupSchema(colander.MappingSchema):
+    name = colander.SchemaNode(colander.String())
+    abs_path = colander.SchemaNode(colander.String())
+    web_path = colander.SchemaNode(colander.String())
+    thumbnail_path = colander.SchemaNode(colander.String())
 
 
 @view_defaults(renderer='json')
@@ -19,11 +30,60 @@ class GroupView(object):
         for g in groups:
             lis.append({
                 'id': g.group_id,
-                'name': g.name
+                'name': g.name,
+                'abs_path': g.abs_path,
+                'web_path': g.web_path,
+                'thumbnail_path': g.thumbnail_path,
             })
         return {
             'groups': lis
         }
+
+    @view_config(route_name='groups', request_method='POST')
+    def post(self):
+        try:
+            data = GroupSchema().deserialize(self.request.json_body)
+        except colander.Invalid, e:
+            self.request.response.status = 400
+            return {'errors': errors_to_angular(e.asdict())}
+
+        name = data['name']
+        c = self.request.dbsession.query(Group)\
+                .filter_by(name=name).one_or_none()
+        if c:
+            self.request.response.status = 400
+            return {
+                'errors': {
+                    # existName is the same key as angular validator
+                    'name': {'existName': {'value': name}}
+                }
+            }
+
+        g = Group()
+        for k, v in data.items():
+            setattr(g, k, v)
+
+        self.request.dbsession.add(g)
+        return {
+            'id': g.group_id,
+            'name': g.name,
+            'abs_path': g.abs_path,
+            'web_path': g.web_path,
+            'thumbnail_path': g.thumbnail_path,
+        }
+
+    @view_config(route_name='group', request_method='PUT')
+    def put(self):
+        group = self.request.matchdict['group']
+        try:
+            data = GroupSchema().deserialize(self.request.json_body)
+        except colander.Invalid, e:
+            self.request.response.status = 400
+            return {'errors': errors_to_angular(e.asdict())}
+
+        for k, v in data.items():
+            setattr(group, k, v)
+        return exc.HTTPNoContent()
 
 
 @view_defaults(renderer='json')
@@ -78,4 +138,6 @@ def includeme(config):
     config.add_route('file_tag', '/api/files/{file_id:\d+}/tags/{tag_id:\d+}',
                      custom_predicates=(load_file, load_tag))
     config.add_route('groups', '/api/groups')
+    config.add_route('group', '/api/groups/{group_id:\d+}',
+                     custom_predicates=(load_group,))
     config.scan(__name__)

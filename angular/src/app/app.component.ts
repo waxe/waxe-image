@@ -36,6 +36,9 @@ export class RedirectHomeComponent {
         <li class="nav-item" routerLinkActive="active">
           <a class="nav-link" routerLink="/categories">Categories</a>
         </li>
+        <li class="nav-item" routerLinkActive="active">
+          <a class="nav-link" routerLink="/settings">Settings</a>
+        </li>
       </ul>
     </div>
   </nav>

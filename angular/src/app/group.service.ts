@@ -11,7 +11,10 @@ import { API_URLS } from './urls.service';
 export interface IGroup {
   id: number;
   name: string;
-  file: IFile[];
+  abs_path:string;
+  web_path: string;
+  thumbnail_path: string;
+  file?: IFile[];
 }
 
 
@@ -39,6 +42,32 @@ export class GroupService {
     this.http.get<IGroupsResponse>(API_URLS.groups.list)
              .toPromise()
              .then(response => this.groups.next(response.groups as IGroup[]));
+  }
+
+  createGroup(group: IGroup) {
+    const url = API_URLS.groups.list;
+    return this.http.post(url, group)
+               .toPromise()
+               .then(() => {
+                 this.fetch();
+               }).catch((res) => {
+                 // NOTE: should be parsed in angular 5
+                 // https://github.com/cwayfinder/angular/commit/d2ba570981b2763dcf25ae71888aa479fe385f0d
+                 return Promise.reject(JSON.parse(res['error']));
+               });
+  }
+
+  updateGroup(group: IGroup) {
+    const url = API_URLS.groups.group.supplant({'group.id': group.id});
+    return this.http.put(url, group)
+               .toPromise()
+               .then(() => {
+                 this.fetch();
+               }).catch((res) => {
+                 // NOTE: should be parsed in angular 5
+                 // https://github.com/cwayfinder/angular/commit/d2ba570981b2763dcf25ae71888aa479fe385f0d
+                 return Promise.reject(JSON.parse(res['error']));
+               });
   }
 
 }

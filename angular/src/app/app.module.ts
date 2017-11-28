@@ -15,6 +15,8 @@ import { FileModule } from './file/file.module';
 import { MessageComponent, MessageService } from './message';
 import { TagListComponent } from './tag/tag-list.component';
 import { TagModule } from './tag/tag.module';
+import { SettingsComponent } from './settings/settings.component';
+import { SettingsModule } from './settings/settings.module';
 
 import { CategoryService } from './category/category.service';
 import { GroupService } from './group.service';
@@ -31,6 +33,7 @@ import { ErrorInterceptor } from './http';
     CategoryModule,
     FileModule,
     TagModule,
+    SettingsModule,
     RouterModule.forRoot([
       {
         path: '',
@@ -47,6 +50,10 @@ import { ErrorInterceptor } from './http';
       {
         path: 'tags',
         component: TagListComponent,
+      },
+      {
+        path: 'settings',
+        component: SettingsComponent,
       }
     ]),
   ],
