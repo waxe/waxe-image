@@ -1,3 +1,4 @@
+import os.path
 import colander
 import pyramid.httpexceptions as exc
 from pyramid.view import view_config, view_defaults
@@ -8,12 +9,14 @@ from .predicates import load_tag, load_file, load_group
 from .validation import errors_to_angular
 
 
-
 class GroupSchema(colander.MappingSchema):
     name = colander.SchemaNode(colander.String())
-    abs_path = colander.SchemaNode(colander.String())
-    web_path = colander.SchemaNode(colander.String())
-    thumbnail_path = colander.SchemaNode(colander.String())
+    abs_path = colander.SchemaNode(colander.String(),
+                                   preparer=os.path.normpath)
+    web_path = colander.SchemaNode(colander.String(),
+                                   preparer=os.path.normpath)
+    thumbnail_path = colander.SchemaNode(colander.String(),
+                                         preparer=os.path.normpath)
 
 
 @view_defaults(renderer='json')

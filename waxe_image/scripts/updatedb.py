@@ -1,6 +1,5 @@
 from datetime import datetime
 import hashlib
-import json
 import os
 import pwd
 import re
@@ -73,7 +72,7 @@ def get_modification_data(filename):
     }
 
 
-def doit(dbsession, fs_files, group, path, web_path, thumbnail_path):
+def doit(dbsession, group, fs_files):
 
     db_files = group.files
 
@@ -99,9 +98,9 @@ def doit(dbsession, fs_files, group, path, web_path, thumbnail_path):
 
         cdata = get_creation_data(filename)
         mdata = get_modification_data(filename)
-        rel_path = re.sub('^%s' % re.escape(path), '', filename)
-        wp = web_path + rel_path
-        tp = thumbnail_path + rel_path
+        rel_path = re.sub('^%s/' % re.escape(group.abs_path), '', filename)
+        wp = group.web_path + '/' + rel_path
+        tp = group.thumbnail_path + '/' + rel_path
         f = File(
             abs_path=filename,
             rel_path=rel_path,
@@ -128,20 +127,9 @@ def main(argv=sys.argv):
     engine = get_engine(settings)
     session_factory = get_session_factory(engine)
 
-    folders = json.loads(settings['folders'])
-
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
-
-        for folder in folders:
-            group_name = folder['name']
-            group = dbsession.query(Group).filter_by(
-                name=group_name).one_or_none()
-            if not group:
-                group = Group(name=folder['name'])
-
-            path = folder['path']
-            web_path = folder['web_path']
-            thumbnail_path = folder['thumbnail_path']
-            fs_files = get_files(path, settings)
-            doit(dbsession, fs_files, group, path, web_path, thumbnail_path)
+        groups = dbsession.query(Group).all()
+        for group in groups:
+            fs_files = get_files(group.abs_path, settings)
+            doit(dbsession, group, fs_files)
