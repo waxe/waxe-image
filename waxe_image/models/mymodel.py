@@ -34,6 +34,14 @@ category_tag_table = Table(
 )
 
 
+file_group_table = Table(
+    'file_group',
+    Base.metadata,
+    Column('file_id', Integer, ForeignKey('file.file_id')),
+    Column('group_id', Integer, ForeignKey('group.group_id'))
+)
+
+
 class Group(Base):
     __tablename__ = 'group'
     group_id = Column(Integer, primary_key=True)
@@ -42,7 +50,8 @@ class Group(Base):
     web_path = Column(String)
     thumbnail_path = Column(String)
 
-    files = relationship("File", backref="group", order_by="File.rel_path")
+    files = relationship("File", secondary=file_group_table,
+                         backref="groups", order_by="File.rel_path")
 
 
 class File(Base):
@@ -59,8 +68,6 @@ class File(Base):
     modification_author = Column(String, nullable=True)
 
     md5sum = Column(String)
-
-    group_id = Column(Integer, ForeignKey('group.group_id'))
     tags = relationship("Tag", secondary=file_tag_table, lazy='joined')
 
 

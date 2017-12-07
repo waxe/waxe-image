@@ -46,15 +46,15 @@ def get_files(path, settings):
                    if file_filter_function else _noop_filter)
     folder_filter = (eval_import(folder_filter_function)
                      if folder_filter_function else _noop_filter)
-    fs = []
+    fs = set()
     for (dirpath, dirnames, filenames) in os.walk(path):
         basename = os.path.basename(dirpath)
         if basename.startswith('.') or not folder_filter(dirpath):
             del dirnames[:]
             continue
-        fs.extend([os.path.join(dirpath, f)
-                   for f in filenames
-                   if file_filter(os.path.join(dirpath, f))])
+        fs |= set(os.path.join(dirpath, f)
+                  for f in filenames
+                  if file_filter(os.path.join(dirpath, f)))
     return fs
 
 
@@ -72,16 +72,22 @@ def get_modification_data(filename):
     }
 
 
-def doit(dbsession, group, fs_files):
+def doit(dbsession, group, fs_files, all_db_files, all_fs_files):
 
+    # Need to create a copy. Since we can remove file from group we don't want
+    # to change the iteration.
     db_files = group.files
 
     done = []
-
     for f in db_files:
         done.append(f.abs_path)
-        if f.abs_path not in fs_files:
+        if f.abs_path not in all_fs_files:
             dbsession.delete(f)
+            continue
+
+        if f.abs_path not in fs_files:
+            f.groups.remove(group)
+            dbsession.add(f)
             continue
 
         md5s = md5sum(f.abs_path)
@@ -96,23 +102,27 @@ def doit(dbsession, group, fs_files):
         if filename in done:
             continue
 
-        cdata = get_creation_data(filename)
-        mdata = get_modification_data(filename)
-        rel_path = re.sub('^%s/' % re.escape(group.abs_path), '', filename)
-        wp = group.web_path + '/' + rel_path
-        tp = group.thumbnail_path + '/' + rel_path
-        f = File(
-            abs_path=filename,
-            rel_path=rel_path,
-            web_path=wp,
-            thumbnail_path=tp,
-            creation_date=cdata['date'],
-            creation_author=cdata['author'],
-            modification_date=mdata['date'],
-            modification_author=mdata['author'],
-            md5sum=md5sum(filename)
-        )
-        f.group = group
+        if filename in all_db_files:
+            f = all_db_files[filename]
+            f.groups.append(group)
+        else:
+            cdata = get_creation_data(filename)
+            mdata = get_modification_data(filename)
+            rel_path = re.sub('^%s/' % re.escape(group.abs_path), '', filename)
+            wp = group.web_path + '/' + rel_path
+            tp = group.thumbnail_path + '/' + rel_path
+            f = File(
+                abs_path=filename,
+                rel_path=rel_path,
+                web_path=wp,
+                thumbnail_path=tp,
+                creation_date=cdata['date'],
+                creation_author=cdata['author'],
+                modification_date=mdata['date'],
+                modification_author=mdata['author'],
+                md5sum=md5sum(filename)
+            )
+            f.groups = [group]
         dbsession.add(f)
 
 
@@ -130,6 +140,16 @@ def main(argv=sys.argv):
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
         groups = dbsession.query(Group).all()
+        all_db_files = dict([(f.abs_path, f)
+                             for f in dbsession.query(File).all()])
+
+        files_by_group = {}
         for group in groups:
             fs_files = get_files(group.abs_path, settings)
-            doit(dbsession, group, fs_files)
+            files_by_group[group] = fs_files
+
+        all_fs_files = reduce(lambda a, b: a | b, files_by_group.values())
+
+        for group in groups:
+            fs_files = files_by_group[group]
+            doit(dbsession, group, fs_files, all_db_files, all_fs_files)
