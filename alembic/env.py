@@ -6,25 +6,18 @@ be loaded from there.
 """
 from alembic import context
 from paste.deploy import loadapp
-from logging.config import fileConfig
 from sqlalchemy.engine.base import Engine
 
+from pyramid.paster import (
+    get_appsettings,
+    setup_logging,
+    )
 
-try:
-    # if pylons app already in, don't create a new app
-    from pylons import config as pylons_config
-    pylons_config['__file__']
-except:
-    config = context.config
-    # can use config['__file__'] here, i.e. the Pylons
-    # ini file, instead of alembic.ini
-    config_file = config.get_main_option('pylons_config_file')
-    fileConfig(config_file)
-    wsgi_app = loadapp('config:%s' % config_file, relative_to='.')
+from waxe_image.models import (
+    meta,
+    get_engine,
+)
 
-
-# customize this section for non-standard engine configurations.
-meta = __import__("%s.model.meta" % wsgi_app.config['pylons.package']).model.meta
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -59,9 +52,11 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    # specify here how the engine is acquired
-    # engine = meta.engine
-    raise NotImplementedError("Please specify engine connectivity here")
+    config = context.config
+    config_uri = config.get_main_option('pylons_config_file')
+    setup_logging(config_uri)
+    settings = get_appsettings(config_uri)
+    engine = get_engine(settings)
 
     with engine.connect() as connection:
         context.configure(
@@ -71,6 +66,7 @@ def run_migrations_online():
 
         with context.begin_transaction():
             context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()
