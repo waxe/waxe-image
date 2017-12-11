@@ -29,6 +29,8 @@ tests_require = [
 dev_require = [
     'requests',
     'github3.py',
+    'pastedeploy',
+    'alembic',
 ]
 
 setup(name='waxe-image',
