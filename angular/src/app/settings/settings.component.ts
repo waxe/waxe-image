@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -8,52 +8,52 @@ import { GroupService, IGroup } from '../group.service';
 
 @Component({
   template: `
-   <ng-template #content let-c="close" let-d="dismiss">
-     <div class="modal-header">
-       <h4 class="modal-title" *ngIf="currentGroup">Edit group</h4>
-       <h4 class="modal-title" *ngIf="!currentGroup">Add group</h4>
-       <button type="button" class="close" aria-label="Close" (click)="d()">
-         <span aria-hidden="true">&times;</span>
-       </button>
-     </div>
-     <form (submit)="submitGroup()" [formGroup]="groupForm" novalidate>
-       <div class="modal-body">
-         <div class="form-group">
+  <ng-template #content let-c="close" let-d="dismiss">
+    <div class="modal-header">
+      <h4 class="modal-title" *ngIf="currentGroup">Edit group</h4>
+      <h4 class="modal-title" *ngIf="!currentGroup">Add group</h4>
+      <button type="button" class="close" aria-label="Close" (click)="d()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form (submit)="submitGroup()" [formGroup]="groupForm" novalidate>
+      <div class="modal-body">
+        <div class="form-group">
+          <wi-form-group>
             <label for="name">Name</label>
             <input type="text" class="form-control" placeholder="Group name" formControlName="name" id="name">
-            <span *ngIf="name.invalid && name.dirty" class="invalid">
-              <div *ngIf="name.errors.required">Name is required.</div>
-              <div *ngIf="name.errors.existName">'{{name.errors.existName.value}}' already exists.</div>
-            </span>
-         </div>
-         <div class="form-group">
+            <wi-form-error *ngIf="name.hasError('required')">Name is required.</wi-form-error>
+            <wi-form-error *ngIf="name.hasError('existName')">'{{name.errors.existName.value}}' already exists.</wi-form-error>
+          </wi-form-group>
+        </div>
+        <div class="form-group">
+          <wi-form-group>
             <label for="abs_path">Absolute path</label>
             <input type="text" class="form-control" placeholder="Absolute path" formControlName="abs_path" id="abs_path">
-            <span *ngIf="abs_path.invalid && abs_path.dirty" class="invalid">
-              <div *ngIf="abs_path.errors.required">Absolute path is required.</div>
-            </span>
-         </div>
-         <div class="form-group">
-            <label for="web_path">Web path</label>
-            <input type="text" class="form-control" placeholder="Web path" formControlName="web_path" id="web_path">
-            <span *ngIf="web_path.invalid && web_path.dirty" class="invalid">
-              <div *ngIf="web_path.errors.required">Web path is required.</div>
-            </span>
-         </div>
-         <div class="form-group">
+            <wi-form-error *ngIf="abs_path.hasError('required')">Absolute path is required.</wi-form-error>
+          </wi-form-group>
+        </div>
+        <div class="form-group">
+          <wi-form-group>
+           <label for="web_path">Web path</label>
+           <input type="text" class="form-control" placeholder="Web path" formControlName="web_path" id="web_path">
+           <wi-form-error *ngIf="web_path.hasError('required')">Web path is required.</wi-form-error>
+          </wi-form-group>
+        </div>
+        <div class="form-group">
+          <wi-form-group>
             <label for="thumbnail_path">Thumbnail path</label>
             <input type="text" class="form-control" placeholder="Thumbnail path" formControlName="thumbnail_path" id="thumbnail_path">
-            <span *ngIf="thumbnail_path.invalid && thumbnail_path.dirty" class="invalid">
-              <div *ngIf="thumbnail_path.errors.required">Thumbnail path is required.</div>
-            </span>
-         </div>
-       </div>
-       <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="c()">Cancel</button>
+            <wi-form-error *ngIf="thumbnail_path.hasError('required')">Thumbnail path is required.</wi-form-error>
+          </wi-form-group>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="c()">Cancel</button>
         <button type="submit" class="btn btn-success">Save</button>
-       </div>
-     </form>
-   </ng-template>
+      </div>
+    </form>
+  </ng-template>
   <br>
   <br>
   <div class="container">
@@ -85,7 +85,8 @@ export class SettingsComponent implements OnInit {
   constructor(private fb: FormBuilder, public modalService: NgbModal, private groupService: GroupService) {}
 
   existNameValidator(control: AbstractControl): {[key: string]: any} {
-    const groups: IGroup[] = this.groups.filter((group: IGroup) => (group.name === control.value && (!this.currentGroup || group.id !== this.currentGroup.id)));
+    const groups: IGroup[] = this.groups.filter((group: IGroup) => (
+      group.name === control.value && (!this.currentGroup || group.id !== this.currentGroup.id)));
     return groups.length ? {'existName': {value: control.value}} : null;
   }
 
@@ -112,7 +113,7 @@ export class SettingsComponent implements OnInit {
   }
 
 
-  open(content: TemplateRef<any>, group: IGroup=null) {
+  open(content: TemplateRef<any>, group: IGroup = null) {
     this.currentGroup = group;
     this.createForm();
     this.modal = this.modalService.open(content);
@@ -125,12 +126,12 @@ export class SettingsComponent implements OnInit {
     }
    const formModel = this.groupForm.value;
     const group: IGroup = {
-      id: this.currentGroup ? this.currentGroup.id: null,
+      id: this.currentGroup ? this.currentGroup.id : null,
       name: formModel.name,
       abs_path: formModel.abs_path,
       web_path: formModel.web_path,
       thumbnail_path: formModel.thumbnail_path,
-    }
+    };
 
     let func: Function;
 
