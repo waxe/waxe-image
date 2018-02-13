@@ -1,34 +1,35 @@
-import { Component, ContentChild, Directive } from '@angular/core';
+import { Component, ContentChild, Directive, HostBinding } from '@angular/core';
 import { FormGroupDirective, NgControl } from '@angular/forms';
+
+import { Subscription } from 'rxjs/Rx';
 
 
 @Directive({
   selector: 'wi-form-error',
   host: {
-    '[class.invalid]': 'true',
+    'class': 'invalid-feedback',
   }
 })
 export class WIFormErrorDirective {}
 
 
-@Component({
-  selector: 'wi-form-group',
-  template: `
-  <ng-content></ng-content>
-  <ng-content select="wi-form-error" *ngIf="hasError()"></ng-content>
-  `
+@Directive({
+  selector: '[wiField]',
+  host: {
+    '[class.is-invalid]': 'isInvalid()',
+    '[class.is-valid]': 'isValid()',
+  }
 })
-export class WIFormGroupComponent {
+export class WIFieldDirective {
 
-  private formSubmitted = false;
+  formSubscription: Subscription;
+  formSubmitted = false;
 
-  @ContentChild(NgControl) control: NgControl;
-
-  constructor(private parentFormGroup: FormGroupDirective) {
-    this.parentFormGroup.ngSubmit.subscribe(() => this.formSubmitted = true);
+  constructor(private parentFormGroup: FormGroupDirective, private control: NgControl) {
+    this.formSubscription = this.parentFormGroup.ngSubmit.subscribe(() => this.formSubmitted = true);
   }
 
-  public hasError() {
+  public isInvalid(): boolean {
     if (! this.control.invalid) {
       return false;
     }
@@ -36,5 +37,22 @@ export class WIFormGroupComponent {
     // have this condition to true when adding some fields on the fly
     return (this.control.dirty || this.formSubmitted);
   }
+
+  public isValid(): boolean {
+    return (this.control.valid && this.formSubmitted);
+  }
+}
+
+
+@Component({
+  selector: 'wi-form-group',
+  template: `
+  <ng-content></ng-content>
+  <ng-content select="wi-form-error" *ngIf="field.isInvalid()"></ng-content>
+  `,
+})
+export class WIFormGroupComponent {
+
+  @ContentChild(WIFieldDirective) field: WIFieldDirective;
 
 }

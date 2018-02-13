@@ -21,7 +21,7 @@ import { GroupService, IGroup } from '../group.service';
         <div class="form-group">
           <wi-form-group>
             <label for="name">Name</label>
-            <input type="text" class="form-control" placeholder="Group name" formControlName="name" id="name">
+            <input wiField type="text" class="form-control" placeholder="Group name" formControlName="name" id="name">
             <wi-form-error *ngIf="name.hasError('required')">Name is required.</wi-form-error>
             <wi-form-error *ngIf="name.hasError('existName')">'{{name.errors.existName.value}}' already exists.</wi-form-error>
           </wi-form-group>
@@ -29,21 +29,21 @@ import { GroupService, IGroup } from '../group.service';
         <div class="form-group">
           <wi-form-group>
             <label for="abs_path">Absolute path</label>
-            <input type="text" class="form-control" placeholder="Absolute path" formControlName="abs_path" id="abs_path">
+            <input wiField type="text" class="form-control" placeholder="Absolute path" formControlName="abs_path" id="abs_path">
             <wi-form-error *ngIf="abs_path.hasError('required')">Absolute path is required.</wi-form-error>
           </wi-form-group>
         </div>
         <div class="form-group">
           <wi-form-group>
            <label for="web_path">Web path</label>
-           <input type="text" class="form-control" placeholder="Web path" formControlName="web_path" id="web_path">
+           <input wiField type="text" class="form-control" placeholder="Web path" formControlName="web_path" id="web_path">
            <wi-form-error *ngIf="web_path.hasError('required')">Web path is required.</wi-form-error>
           </wi-form-group>
         </div>
         <div class="form-group">
           <wi-form-group>
             <label for="thumbnail_path">Thumbnail path</label>
-            <input type="text" class="form-control" placeholder="Thumbnail path" formControlName="thumbnail_path" id="thumbnail_path">
+            <input wiField type="text" class="form-control" placeholder="Thumbnail path" formControlName="thumbnail_path" id="thumbnail_path">
             <wi-form-error *ngIf="thumbnail_path.hasError('required')">Thumbnail path is required.</wi-form-error>
           </wi-form-group>
         </div>

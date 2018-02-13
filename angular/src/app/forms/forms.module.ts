@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { WIFormGroupComponent, WIFormErrorDirective } from './forms';
+import { WIFieldDirective, WIFormGroupComponent, WIFormErrorDirective } from './forms';
 
 
 @NgModule({
@@ -11,11 +11,13 @@ import { WIFormGroupComponent, WIFormErrorDirective } from './forms';
     ReactiveFormsModule,
   ],
   declarations: [
+    WIFieldDirective,
     WIFormGroupComponent,
     WIFormErrorDirective,
   ],
   exports: [
     ReactiveFormsModule,
+    WIFieldDirective,
     WIFormGroupComponent,
     WIFormErrorDirective,
   ]

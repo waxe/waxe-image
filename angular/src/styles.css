@@ -36,14 +36,6 @@ file {
   width: 100%;
 }
 
-.ng-invalid:not(form).ng-dirty  {
-  border: 1px solid #a94442; /* red */
-}
-
-.invalid {
-  color: #721c24;
-}
-
 .form-inline input {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
