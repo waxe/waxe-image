@@ -24,7 +24,7 @@ import { CategoryService } from '../category/category.service';
       </div>
     </div>
   </div>
-  <div class="container-fluid" infiniteScroll (scrolled)="onScroll()">
+  <div class="container-fluid" [infiniteScroll]="matchingFiles.length" (scrolled)="onScroll($event)">
     <div class="row">
       <div class="col-sm-2" *ngFor="let file of files">
         <file [file]="file"></file>
@@ -35,21 +35,21 @@ import { CategoryService } from '../category/category.service';
 export class FileListComponent implements AfterViewInit, OnDestroy, OnInit {
   files: IFile[] = [];
   private allFiles: IFile[] = [];
-  private matchingFiles: IFile[] = [];
+  public matchingFiles: IFile[] = [];
   private categories: ICategory[] = [];
   private tags: ITag[] = [];
 
   private tagSub: Subscription;
   private categorySub: Subscription;
 
-  private increment: number = 100;
-  private nb: number = 100;
+  private initialNb = 30 * 6;
 
   private inputValue: Observable<string>;
 
   @ViewChild('search') input: ElementRef;
 
-  constructor(private route: ActivatedRoute, private categoryService: CategoryService, private fileService: FileService, public tagService: TagService) {}
+  constructor(private route: ActivatedRoute, private categoryService: CategoryService,
+              private fileService: FileService, public tagService: TagService) {}
 
 
   ngAfterViewInit() {
@@ -60,7 +60,7 @@ export class FileListComponent implements AfterViewInit, OnDestroy, OnInit {
       if (value !== '') {
         const re = new RegExp(value, 'i');
 
-        let matchingTags = this.tags.filter((tag: ITag) => re.test(tag.name));
+        const matchingTags = this.tags.filter((tag: ITag) => re.test(tag.name));
 
         this.categories
              .filter((category: ICategory) => re.test(category.name))
@@ -73,21 +73,19 @@ export class FileListComponent implements AfterViewInit, OnDestroy, OnInit {
         this.matchingFiles = this.allFiles.filter((file: IFile) => {
           return this.fileMatch(re, file, matchingTags.map((tag: ITag) => tag.id));
         });
-      }
-      else {
+      } else {
         this.matchingFiles = this.allFiles;
       }
-      this.nb = this.increment;
-      this.files = this.matchingFiles.slice(0, this.nb);
+      this.files = this.matchingFiles.slice(0, this.initialNb);
     });
-  };
+  }
 
   fileMatch(re: RegExp, file: IFile, matchingTagIds: number[]) {
     if (re.test(file.rel_path)) {
       return true;
     }
 
-    for(let tag of file.tags) {
+    for (const tag of file.tags) {
       if (matchingTagIds.indexOf(tag.id) !== -1) {
         return true;
       }
@@ -107,10 +105,9 @@ export class FileListComponent implements AfterViewInit, OnDestroy, OnInit {
       .subscribe((files: IFile[]) => {
         // Empty the search
         this.input.nativeElement.value = '';
-        this.nb = this.increment;
         this.allFiles = files;
         this.matchingFiles = files;
-        this.files = files.slice(0, this.nb);
+        this.files = files.slice(0, this.initialNb);
     });
   }
 
@@ -119,8 +116,7 @@ export class FileListComponent implements AfterViewInit, OnDestroy, OnInit {
     this.categorySub.unsubscribe();
   }
 
-  onScroll() {
-    this.nb += this.increment;
-    this.files = this.matchingFiles.slice(0, this.nb);
+  onScroll(data: {}) {
+    this.files = this.matchingFiles.slice(data['start'], data['end']);
   }
 }
