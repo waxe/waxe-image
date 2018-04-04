@@ -9,7 +9,7 @@ def main():
     gh = login('lereskp', password=pwd)
     repo = gh.repository('waxe', 'waxe-image')
     release = None
-    for rel in repo.iter_releases():
+    for rel in repo.releases():
         if rel.tag_name == __version__:
             release = rel
             break

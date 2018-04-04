@@ -3,7 +3,7 @@ import datetime
 from pyramid.config import Configurator
 from pyramid.renderers import JSON
 
-__version__ = '0.0.1-alpha-1'
+__version__ = '0.0.1-alpha-2'
 
 
 def main(global_config, **settings):
