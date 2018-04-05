@@ -72,7 +72,7 @@ def get_modification_data(filename):
     }
 
 
-def doit(dbsession, group, fs_files, all_db_files, all_fs_files):
+def doit(dbsession, group, fs_files, all_db_files, all_fs_files, settings):
 
     # Need to create a copy. Since we can remove file from group we don't want
     # to change the iteration.
@@ -98,6 +98,17 @@ def doit(dbsession, group, fs_files, all_db_files, all_fs_files):
             f.md5sum = md5s
             dbsession.add(f)
 
+    file_creation_data_function = settings.get('file_creation_data_function')
+    file_modification_data_function = settings.get(
+        'file_modification_data_function')
+
+    get_creation_data_func = (
+        eval_import(file_creation_data_function)
+        if file_creation_data_function else get_creation_data)
+    get_modification_data_func = (
+        eval_import(file_modification_data_function)
+        if file_modification_data_function else get_modification_data)
+
     for filename in fs_files:
         if filename in done:
             continue
@@ -106,8 +117,8 @@ def doit(dbsession, group, fs_files, all_db_files, all_fs_files):
             f = all_db_files[filename]
             f.groups.append(group)
         else:
-            cdata = get_creation_data(filename)
-            mdata = get_modification_data(filename)
+            cdata = get_creation_data_func(filename)
+            mdata = get_modification_data_func(filename)
             rel_path = re.sub('^%s/' % re.escape(group.abs_path), '', filename)
             wp = group.web_path + '/' + rel_path
             tp = group.thumbnail_path + '/' + rel_path
@@ -152,4 +163,5 @@ def main(argv=sys.argv):
 
         for group in groups:
             fs_files = files_by_group[group]
-            doit(dbsession, group, fs_files, all_db_files, all_fs_files)
+            doit(dbsession, group, fs_files, all_db_files, all_fs_files,
+                 settings)
