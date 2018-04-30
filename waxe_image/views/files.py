@@ -1,4 +1,5 @@
 import os.path
+import urlparse
 import colander
 import pyramid.httpexceptions as exc
 from pyramid.view import view_config, view_defaults
@@ -9,14 +10,21 @@ from .predicates import load_tag, load_file, load_group
 from .validation import errors_to_angular
 
 
+def normpath(path):
+    url = urlparse.urlparse(path)
+    url._replace(path=os.path.normpath(url.path))
+    print url.geturl()
+    return url.geturl()
+
+
 class GroupSchema(colander.MappingSchema):
     name = colander.SchemaNode(colander.String())
     abs_path = colander.SchemaNode(colander.String(),
-                                   preparer=os.path.normpath)
+                                   preparer=normpath)
     web_path = colander.SchemaNode(colander.String(),
-                                   preparer=os.path.normpath)
+                                   preparer=normpath)
     thumbnail_path = colander.SchemaNode(colander.String(),
-                                         preparer=os.path.normpath)
+                                         preparer=normpath)
 
 
 @view_defaults(renderer='json')
