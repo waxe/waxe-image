@@ -1,5 +1,5 @@
 import os.path
-import urlparse
+from urllib.parse import urlparse
 import colander
 import pyramid.httpexceptions as exc
 from pyramid.view import view_config, view_defaults
@@ -13,7 +13,6 @@ from .validation import errors_to_angular
 def normpath(path):
     url = urlparse.urlparse(path)
     url._replace(path=os.path.normpath(url.path))
-    print url.geturl()
     return url.geturl()
 
 
@@ -54,7 +53,7 @@ class GroupView(object):
     def post(self):
         try:
             data = GroupSchema().deserialize(self.request.json_body)
-        except colander.Invalid, e:
+        except colander.Invalid as e:
             self.request.response.status = 400
             return {'errors': errors_to_angular(e.asdict())}
 
@@ -88,7 +87,7 @@ class GroupView(object):
         group = self.request.matchdict['group']
         try:
             data = GroupSchema().deserialize(self.request.json_body)
-        except colander.Invalid, e:
+        except colander.Invalid as e:
             self.request.response.status = 400
             return {'errors': errors_to_angular(e.asdict())}
 

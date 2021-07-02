@@ -1,4 +1,4 @@
-import StringIO
+import io
 import os
 import requests
 import shutil
@@ -14,7 +14,7 @@ NG_BUILD_FOLDER = 'website'
 
 def main(argv=sys.argv):
     if len(argv) > 2:
-        print 'Too many arguments'
+        print('Too many arguments')
         sys.exit(1)
     global NG_BUILD_FOLDER
     if len(argv) == 2:
@@ -22,7 +22,7 @@ def main(argv=sys.argv):
     if os.path.isdir(NG_BUILD_FOLDER):
         shutil.rmtree(NG_BUILD_FOLDER)
     if os.path.exists(NG_BUILD_FOLDER):
-        print 'There is an issue with the folder %s' % NG_BUILD_FOLDER
+        print('There is an issue with the folder %s' % NG_BUILD_FOLDER)
         sys.exit(1)
     r = requests.get(API_RELEASES_URL)
     if r.status_code != 200:
@@ -53,5 +53,5 @@ def main(argv=sys.argv):
     if r.status_code != 200:
         raise ValueError('Bad status code %s' % r.status_code)
 
-    z = zipfile.ZipFile(StringIO.StringIO(r.content))
+    z = zipfile.ZipFile(io.StringIO(r.content))
     z.extractall(NG_BUILD_FOLDER)

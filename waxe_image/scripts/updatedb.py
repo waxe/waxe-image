@@ -6,6 +6,7 @@ import re
 import sys
 import transaction
 
+from functools import reduce
 from paste.util.import_string import eval_import
 
 
@@ -25,7 +26,7 @@ from ..models import File, Group
 
 
 def md5sum(filename):
-    return hashlib.md5(open(filename, 'r').read()).hexdigest()
+    return hashlib.md5(open(filename, 'rb').read()).hexdigest()
 
 
 def usage(argv):
